@@ -2,8 +2,8 @@ const { sanitizeValue } = require('./field')
 
 /**
  * Validate Input
- * - This function validates the input data against the provided field rules.
- * - It checks for required fields, data types, length, patterns, and custom rules.
+ * - This function is an Express middleware that validates the input data against specified rules.
+ * - It checks the request body, query, params, and files for required fields and their
  */
 function validateInput(fieldRules) {
   return function (req, res, next) {
