@@ -3,6 +3,8 @@
 Thank you for your interest in improving **NeaAPI-Core**! 🚀
 Your help makes this project even better and more robust for everyone.
 
+---
+
 ## 📝 How to Contribute
 
 - **Fork** this repository  
@@ -13,6 +15,8 @@ Your help makes this project even better and more robust for everyone.
 - **Push** to your branch: `git push origin feature/my-feature`  
 - **Create a Pull Request** on GitHub
 
+---
+
 ## 🧪 Testing
 
 * Please make sure your code passes all tests:
@@ -20,6 +24,8 @@ Your help makes this project even better and more robust for everyone.
   * Run `npm install`
   * Run `npm test`
 * If you add new features, add or update unit tests where relevant!
+
+---
 
 ## 🚦 Code Style
 
@@ -29,6 +35,8 @@ Your help makes this project even better and more robust for everyone.
   * Use descriptive variable and function names
   * Add clear comments for complex logic
 
+---
+
 ## 🤝 Pull Request Guidelines
 
 * Make your pull request against the `develop` branch if available, otherwise `main`.
@@ -37,10 +45,14 @@ Your help makes this project even better and more robust for everyone.
 * Please do **not** commit generated files or dependencies (`node_modules`).
 * Make sure your code does not break existing features.
 
+---
+
 ## 🗣️ Communication
 
 * For bugs, open a [GitHub Issue](https://github.com/NeaDigitra/NeaAPI-Core/issues) with steps to reproduce.
 * For feature requests, open a [GitHub Issue](https://github.com/NeaDigitra/NeaAPI-Core/issues) and describe your idea.
+
+---
 
 ## 👨‍💻 Code of Conduct
 
