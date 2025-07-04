@@ -190,7 +190,7 @@ function runValidation(inputData, fieldRules) {
  * - It checks the body, query, params, and files for the field value.
  */
 function resolveFieldValue(inputData, fieldName) {
-  if (hasDuplicateKey(inputData.rawBody, fieldName)) {
+  if (hasDuplicateKey(inputData.body, fieldName)) {
     return '__DUPLICATE_BODY_PARAM__'
   }
   if (fieldName in inputData.body) {
@@ -218,12 +218,17 @@ function resolveFieldValue(inputData, fieldName) {
  * - It uses a regular expression to find all occurrences of the field name.
  */
 function hasDuplicateKey(rawBody, fieldName) {
-  if (!(rawBody) || !(fieldName)) {
+  if (!(rawBody) || !(fieldName) || !(Array.isArray(rawBody[fieldName]))) {
     return false
   }
-  const regex = new RegExp(`"${fieldName}"\\s*:`, 'g')
-  const matches = rawBody.match(regex)
-  return matches && matches.length > 1
+  const seen = new Set()
+  for (const val of rawBody[fieldName]) {
+    if (seen.has(val)) {
+      return true
+    }
+    seen.add(val)
+  }
+  return false
 }
 
 /**
