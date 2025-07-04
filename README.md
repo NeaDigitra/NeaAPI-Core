@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/NeaDigitra/NeaAPI-Core/badge.svg?branch=main)](https://coveralls.io/github/NeaDigitra/NeaAPI-Core?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-This project provides a robust and structured API boilerplate built with Express.js, focusing on clean architecture, secure practices, and efficient development. It includes essential middlewares for logging, response formatting, request fingerprinting, and signature validation, along with a comprehensive input validation system.
+This project provides a robust and well-structured API boilerplate built with Express.js. It focuses on clean architecture, secure practices, and efficient development. The project includes essential middlewares for logging, response formatting, request fingerprinting, and signature validation, along with a comprehensive input validation system.
 
 ---
 
@@ -55,10 +55,12 @@ This project provides a robust and structured API boilerplate built with Express
 
 ## 📝 TODO
 
-* [ ] API docs generator (auto generate OpenAPI/Swagger from routes & validator)
-* [ ] Redis integration for rate limit (production security, anti-abuse)
-* [ ] Database integration (MySQL, PostgreSQL, etc.) with ORM Knex.js
-* [ ] Dockerfile for clean container API build & deploy
+* [ ] **API Docs Generator**: Auto-generate OpenAPI/Swagger docs from routes & validators.
+* [ ] **Database Integration**: Set up MySQL/PostgreSQL with ORM (Knex.js).
+* [ ] **Redis Rate Limiting**: Integrate Redis for rate limiting and abuse prevention.
+* [x] **Dockerfile**: Create Dockerfile for building and deploying the API.
+* [ ] **CORS Middleware**: Handle cross-origin requests with CORS middleware.
+* [ ] **Signature Verification**: Implement full signature verification for requests.
 * [ ] ...
 
 ---
@@ -79,13 +81,16 @@ This project provides a robust and structured API boilerplate built with Express
 │   ├── logger.js              # Request logging middleware
 │   ├── response.js            # Response formatting middleware
 │   └── signature.js           # Request signature verification middleware
+├── modules
+│   └── global
+│       └── rules.js           # Global validation rules for input fields
 ├── routes/
-│   ├── errors.js              # Error definition routes
-│   ├── example.js             # Example API routes
-│   └── general.js             # General API routes
+│   ├── all.js                 # Route handler used for both /api/example and /api/secure
+│   ├── errors.js              # Route handler for error responses (prefix: /errors/:errorKey)
+│   └── general.js             # Route handler for /api/general
 ├── server.js                  # Main server file to start the application
 ├── tests/
-│   ├── fingerprint.test.js.   # Fingerprint middleware tests
+│   ├── fingerprint.test.js    # Fingerprint middleware tests
 │   ├── response.test.js       # API response formatting tests
 │   ├── signature.test.js      # Signature generation and verification tests
 │   └── validator.test.js      # All input validation tests
@@ -97,14 +102,39 @@ This project provides a robust and structured API boilerplate built with Express
 
 ## 🚦 Getting Started
 
-```bash
-git clone https://github.com/NeaDigitra/NeaAPI-Core.git
-cd NeaAPI-Core
-cp .env.example .env
-npm install
-npm run test   # run unit tests
-npm start      # start development server
-```
+- Clone the repository and install dependencies:
+  ```bash
+  git clone https://github.com/NeaDigitra/NeaAPI-Core.git
+  cd NeaAPI-Core
+  cp .env.example .env
+  npm install
+  ```
+
+- Configure your environment variables in `.env` (e.g., `APP_NAME`, `APP_VERSION`).
+- Run unit tests to ensure everything is working:
+
+  ```bash
+  npm test
+  ```
+
+- Start the development server:
+  ```bash
+  npm start
+  ```
+
+## 🐳 Running with Docker
+- Build and run the production image:
+  ```bash
+  docker build -t neaapi-core:latest .
+  docker run -p 3000:3000 neaapi-core:latest
+  ```
+
+- For development with live reload, use docker-compose:
+  ```bash
+  docker-compose up --build
+  ```
+
+- This mounts your source code and restarts the server automatically on changes.
 
 ---
 
