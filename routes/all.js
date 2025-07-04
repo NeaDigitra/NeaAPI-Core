@@ -1,6 +1,5 @@
 const router = require('express').Router()
 const allController = require('../controllers/all')
-const apiSignature = require('../middlewares/signature')
 const globalRules = require('../modules/global/rules')
 const { validateInput } = require('../validator/index')
 
@@ -10,8 +9,8 @@ const { validateInput } = require('../validator/index')
   * - They provide example endpoints for testing and development purposes.
  */
 router.get('/1', allController.getExample1)
-router.get('/2', apiSignature, allController.getExample2)
-router.post('/3', apiSignature, validateInput(globalRules), allController.postExample3)
+router.get('/2', allController.getExample2)
+router.post('/3', validateInput(globalRules), allController.postExample3)
 
 /**
  * Exports
