@@ -93,6 +93,7 @@ Works with query parameters or request body as well, but headers are preferred f
   POST /api/secure/pay HTTP/1.1
   Host: example.com
   Content-Type: application/json
+  ...
 
   {
     "username": "test",
@@ -106,6 +107,7 @@ Works with query parameters or request body as well, but headers are preferred f
   POST /api/secure/pay?x-secret=your-shared-secret&x-signature=computed-signature HTTP/1.1
   Host: example.com
   Content-Type: application/json
+  ...
 
   {
     "username": "test",
@@ -120,7 +122,7 @@ To compute the signature, you need to create a hash of the request payload combi
   const crypto = require('crypto')
 
   function computeSignature(payload, secret) {
-    return crypto.createHash('sha256').update(payload + secret).digest('hex')
+    return crypto.createHmac('sha256', secret).update(payload).digest('hex')
   }
 
   const payload = JSON.stringify({ username: 'test', email: 'test@example.com' })
