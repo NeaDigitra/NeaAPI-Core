@@ -2,12 +2,45 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    types: [opened, edited, synchronize, reopened]
 
 jobs:
+
+  check-commit-message:
+    name: Commit Message Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch main for commit lint
+        run: git fetch origin main
+
+      - name: Lint commit messages
+        run: |
+          COMMITS=$(git log origin/main..HEAD --pretty=format:"%s")
+          if [ -z "$COMMITS" ]; then
+            echo "No new commit messages to check. Skipping commit lint."
+            exit 0
+          fi
+          echo "::group::Commit messages"
+          echo "$COMMITS"
+          echo "::endgroup::"
+          ALLOWED="^(feat|fix|docs|refactor|chore|test|build|ci|revert)\([a-z0-9-]+\): .+ :[a-z0-9_]+:$"
+          FAIL=0
+          while read -r line; do
+            if ! [[ "$line" =~ $ALLOWED ]]; then
+              echo "::error::Invalid commit message format: \"$line\""
+              echo "::error::Commit messages must match the pattern: <type>(<scope>): <subject> :<emoji>:"
+              echo "::error::Example: feat(api): add payment endpoint :sparkles:"
+              FAIL=1
+            fi
+          done <<< "$COMMITS"
+          exit $FAIL
+
   build-and-test:
+    name: Build and Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
