@@ -8,12 +8,15 @@ Only the latest stable release of **NeaAPI-Core** is actively maintained and rec
 
 If you discover a security vulnerability, **please do not open a public issue.**
 
+**Choose one of these private channels:**
+
 * ✉️ **Email us directly:**
-
   * `dev@neabyte.com`
-  * Or contact project maintainers privately on [GitHub](https://github.com/NeaDigitra/NeaAPI-Core)
+  
+* 🛡️ **Submit via GitHub Security Advisory:**
+  * [Report privately](https://github.com/NeaDigitra/NeaAPI-Core/security/advisories/new)
 
-Please include as much detail as possible so we can investigate and address the issue promptly.
+> **Note:** Public issues are not monitored for security disclosures, and sensitive reports posted there may be visible to everyone. Please use private channels above so we can investigate and address the issue promptly.
 
 ## 🚨 Security Best Practices
 
