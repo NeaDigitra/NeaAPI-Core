@@ -13,8 +13,8 @@ This example demonstrates how to use the validator and signature middleware in y
 ```js
 const express = require('express')
 const router = express.Router()
-const { field, validateInput } = require('../validator')
-const controller = require('../controllers/all')
+const controller = require('controllers/all')
+const { field, validateInput } = require('utils/validators/index')
 
 const userValidator = [
   field('username').isString().length({ min: 3, max: 20 }).sanitize(),
@@ -43,8 +43,8 @@ Every request under `/api/secure/*` is automatically checked for a valid signatu
 ## 3️⃣ Apply Signature Middleware on Specific Route Only
 
 ```js
-const apiSignature = require('../middlewares/signature')
-const { field, validateInput } = require('../validator')
+const apiSignature = require('middlewares/signature')
+const { field, validateInput } = require('utils/validators/index')
 
 const paymentValidator = [ field('amount').isNumber().range({ min: 1 }) ]
 
