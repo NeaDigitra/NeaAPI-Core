@@ -104,8 +104,7 @@ This project provides a robust and well-structured API boilerplate built with Ex
 
 Deploy this project to Railway with the button below:
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/Twc5hW?referralCode=JBf6Ji)
-
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/neacore-api?referralCode=JBf6Ji)
 
 ## 🚦 Getting Started
 
