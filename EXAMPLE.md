@@ -6,13 +6,9 @@ This document provides examples of how to use the validator and signature middle
 
 ## 📋 Validator and Signature Usage
 
-This example demonstrates how to use the validator and signature middleware in your Express.js application.
-
-The validator ensures that incoming requests meet specified criteria, while the signature middleware verifies the authenticity of requests.
+This example demonstrates how to use the validator and signature middleware in your Express.js application. The validator ensures that incoming requests meet specified criteria, while the signature middleware verifies the authenticity of requests.
 
 ## 1️⃣ How to Use the Validator
-
-**In your route:**
 
 ```js
 const express = require('express')
@@ -29,26 +25,22 @@ const userValidator = [
 router.post('/register', validateInput(userValidator), controller.register)
 ```
 
-* All requests to `/register` will be validated before hitting the controller.
+All requests to `/register` will be validated before hitting the controller.
 
 ---
 
 ## 2️⃣ Apply Signature Middleware Globally (`app.use`)
-
-**In `server.js` (protect all `/api/secure/*` endpoints):**
 
 ```js
 const apiSignature = require('./middlewares/signature')
 app.use('/api/secure', apiSignature, require('./routes/secure'))
 ```
 
-* Every request under `/api/secure/*` is automatically checked for a valid signature.
+Every request under `/api/secure/*` is automatically checked for a valid signature.
 
 ---
 
 ## 3️⃣ Apply Signature Middleware on Specific Route Only
-
-**In your route file:**
 
 ```js
 const apiSignature = require('../middlewares/signature')
@@ -59,93 +51,92 @@ const paymentValidator = [ field('amount').isNumber().range({ min: 1 }) ]
 router.post('/pay', apiSignature, validateInput(paymentValidator), controller.pay)
 ```
 
-* Only `/pay` endpoint is signature-protected and validated.
+Only `/pay` endpoint is signature-protected and validated.
 
 ---
 
 ## 🛡 HTTP Request for Signature
 
-When using the signature middleware, ensure to include the following headers in your requests:
+When using the signature middleware, include these headers:
 
-  ```http
-  x-secret: your-shared-secret
-  x-signature: computed-signature
-  ```
+```http
+x-secret: your-shared-secret
+x-signature: computed-signature
+```
 
-  ```http
-  POST /api/secure/pay HTTP/1.1
-  Host: example.com
-  Content-Type: application/json
-  x-secret: your-shared-secret
-  x-signature: computed-signature
-  ...
+Example request:
 
-  {
-    "username": "test",
-    "email": "test@example.com"
-  }
-  ```
+```http
+POST /api/secure/pay HTTP/1.1
+Host: example.com
+Content-Type: application/json
+x-secret: your-shared-secret
+x-signature: computed-signature
 
-Works with query parameters or request body as well, but headers are preferred for security.
+{
+  "username": "test",
+  "email": "test@example.com"
+}
+```
 
+Alternatively via body:
 
-  ```http
-  POST /api/secure/pay HTTP/1.1
-  Host: example.com
-  Content-Type: application/json
-  ...
+```http
+POST /api/secure/pay HTTP/1.1
+Host: example.com
+Content-Type: application/json
 
-  {
-    "username": "test",
-    "email": "test@example.com",
-    "x-secret": "your-shared-secret",
-    "x-signature": "computed-signature"
-  }
-  ```
+{
+  "username": "test",
+  "email": "test@example.com",
+  "x-secret": "your-shared-secret",
+  "x-signature": "computed-signature"
+}
+```
 
-  ```http
-  POST /api/secure/pay?x-secret=your-shared-secret&x-signature=computed-signature HTTP/1.1
-  Host: example.com
-  Content-Type: application/json
-  ...
+Or via query:
 
-  {
-    "username": "test",
-    "email": "test@example.com"
-  }
-  ```
+```http
+POST /api/secure/pay?x-secret=your-shared-secret&x-signature=computed-signature HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{
+  "username": "test",
+  "email": "test@example.com"
+}
+```
+
+---
 
 ## 🔑 Signature Computation
-To compute the signature, you need to create a hash of the request payload combined with your shared secret. The signature is typically computed using HMAC (Hash-based Message Authentication Code) with SHA-256.
 
-  ```js
-  const crypto = require('crypto')
+```js
+const crypto = require('crypto')
 
-  function computeSignature(payload, secret) {
-    return crypto.createHmac('sha256', secret).update(payload).digest('hex')
-  }
+function computeSignature(payload, secret) {
+  return crypto.createHmac('sha256', secret).update(payload).digest('hex')
+}
 
-  const payload = JSON.stringify({ username: 'test', email: 'test@example.com' })
-  const secret = 'your-shared-secret'
-  const signature = computeSignature(payload, secret)
-  console.log(`x-signature: ${signature}`)
-  ```
-  
-  * The `x-secret` is your shared secret used to compute the signature.
-  * The `x-signature` is the computed HMAC signature based on the request payload and the shared secret.
-  * Ensure to compute the signature on the client side before sending the request.
-  
+const payload = JSON.stringify({ username: 'test', email: 'test@example.com' })
+const secret = 'your-shared-secret'
+const signature = computeSignature(payload, secret)
+console.log(`x-signature: ${signature}`)
+```
+
+* `x-secret` is your shared secret.
+* `x-signature` is the computed HMAC SHA-256 signature.
+* Compute the signature on the client before sending the request.
+
 ---
 
 ## 📝 Additional Notes
-- Both middlewares can be applied globally or on specific routes as needed.
-- The validator middleware checks the request body, query, and parameters against defined rules.
-- The validator can handle various data types and validation rules, including sanitization to prevent XSS attacks.
-- The signature middleware ensures that requests are authenticated using a shared secret.
-- The signature middleware can be configured to check headers, body, or query parameters for the signature and secret.
 
----
+* Apply middlewares globally or per route as needed.
+* The validator checks body, query, params; handles type validation, XSS sanitization.
+* The signature middleware authenticates requests using a shared secret.
+* Both can check headers, body, or query for credentials.
 
-For more details about the validator api, refer to the [REFERENCE.md](REFERENCE.md) file.
+For full API details, see [REFERENCE.md](REFERENCE.md).
 
-**Mix and match as needed! You can chain both validator and signature in any order per route or globally.**
+Mix and match: chain validator + signature per route or globally.

@@ -6,26 +6,24 @@ The validator module gives you robust, readable, and chainable field validation 
 
 ## 📦 Supported Validation Rules
 
-* `isString()` — String type only
-* `isNumber()` — Number type only
-* `isBoolean()` — Boolean (true/false, 1/0, 'true'/'false')
-* `isEmail()` — Must be valid email address
-* `isFile()` — File upload object (with `originalname`)
-* `isArray()` — Array only
-* `isObject()` — Object (not array)
-* `length({ min, max })` — String/email length
-* `range({ min, max })` — Number range
-* `enum(['A','B'])` — Value must match one of allowed
-* `pattern(/regex/)` — Regex match
-* `custom(fn)` — Custom validation logic, return true or message
-* `optional()` — Field not required
-* `sanitize()` — Block XSS, auto-escape, remove dangerous input
+* `isString()`                 — String type only
+* `isNumber()`                 — Number type only
+* `isBoolean()`                — Boolean (true/false, 1/0, 'true'/'false')
+* `isEmail()`                  — Must be valid email address
+* `isFile()`                   — File upload object (with `originalname`)
+* `isArray()`                  — Array only
+* `isObject()`                 — Object (not array)
+* `length({ min, max })`       — String/email length
+* `range({ min, max })`        — Number range
+* `enum(['A','B'])`            — Value must match one of allowed
+* `pattern(/regex/)`           — Regex match
+* `custom(fn)`                 — Custom validation logic, return true or message
+* `optional()`                 — Field not required
+* `sanitize()`                 — Block XSS, auto-escape, remove dangerous input
 
 ---
 
 ## 🚦 Usage Example
-
-**In a route:**
 
 ```js
 const { field, validateInput } = require('../validator')
@@ -48,18 +46,18 @@ router.post('/signup', validateInput(validator), controller.signup)
 
 ## 🧪 Error Handling
 
-* If validation fails, response is:
+If validation fails, response is:
 
-  ```json
-  {
-    ...
-    "errors": [
-      { "field": "username", "message": "Field Is Required" },
-      { "field": "email", "message": "Invalid Email" }
-    ]
-  }
-  ```
-* All error messages are RFC7807 compliant.
+```json
+{
+  "errors": [
+    { "field": "username", "message": "Field Is Required" },
+    { "field": "email", "message": "Invalid Email" }
+  ]
+}
+```
+
+All error messages are RFC7807 compliant.
 
 ---
 
@@ -73,4 +71,4 @@ router.post('/signup', validateInput(validator), controller.signup)
 
 ---
 
-**See main [README.md](./README.md) for full project flow and more examples.**
+See main [README.md](./README.md) for full project flow and more examples.

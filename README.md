@@ -12,44 +12,43 @@ This project provides a robust and well-structured API boilerplate built with Ex
 ## 📦 Features & Purpose
 
 * 🔐 **Signature Validator Middleware**
-  * Secures each request using HMAC-SHA256 signatures with a per-request secret (from header/session).
-  * Purpose: Prevent request tampering and replay attacks—API only processes requests signed with a valid shared secret.
+  * Secures requests using HMAC-SHA256 signatures with a per-request secret (header/session).
+  * Prevents tampering, replay attacks — only valid, signed requests are processed.
 
 * 🧼 **Input Validator Middleware**
-  * Strong validation & sanitization (type, pattern, enum, range, custom, XSS filter) for query, body, params.
-  * Purpose: Prevent injection, malformed payload, and XSS; auto-handle field errors.
+  * Strong validation and sanitization (type, pattern, enum, range, custom, XSS filter) for query, body, params.
+  * Prevents injection, malformed payloads, XSS — auto-handles field errors.
 
-* 🛡️ **RFC7807 Error Response Standard**
-  * Purpose: Every error is structured and self-documenting (API clients always know what, why, and how to fix).
+* 🛡️ **RFC7807 Error Response**
+  * All errors follow RFC7807 — structured, self-documenting, easy for clients to debug and fix.
 
-* 🧩 **Clean CRUD structure**
-  * Standard separation: Controller, Route, Middleware, Helper, Validator.
-  * Purpose: Developer happiness, maintainability, and fast feature scaling.
+* 🧩 **Clean CRUD Structure**
+  * Clear separation of Controller, Route, Middleware, Helper, Validator.
+  * Designed for maintainability, scalability, and developer productivity.
 
-* ⚡ **Ultra-fast Express.js server**
-  * Purpose: Performance & simplicity—deploy anywhere.
+* ⚡ **Ultra-fast Express.js Server**
+  * Performance-focused, simple, deployable anywhere.
 
-* 🧪 **100% unit test coverage (Jest + Supertest)**
-  * Purpose: Safe refactor, CI, and reliability.
+* 🧪 **Test Coverage**
+  * Built with Jest + Supertest — ensures safe refactoring, CI integration, and reliability.
 
 ---
-
 ## 🔒 Security Flow
 
-1. **Request Signature:**
-   * All critical endpoints require a valid HMAC signature, using a shared secret (`x-secret`) sent via header/session.
-   * The server re-computes the signature from the full payload (sorted, sanitized) and secret, then matches it to `x-signature` header (or body/query/param).
-   * If the signature is missing/invalid/secret missing: request is rejected with a clear RFC7807 error.
+1. **Request Signature**
+   * All critical endpoints require a valid HMAC signature (`x-signature`), computed using a shared secret (`x-secret`) sent via header or session.
+   * The server recomputes the signature from the full, sorted, sanitized payload and matches it to `x-signature` (from header, body, query, or param).
+   * Missing or invalid signature (or missing secret) → request rejected with RFC7807 error.
 
-2. **Input Validation & Sanitization:**
-   * All input (body, query, params, file) is checked by field validator before hitting any controller logic.
-   * Fields can be: required, optional, string/number/boolean, range, enum, regex, custom, file, object/array.
-   * All string fields can be sanitized for XSS, dangerous HTML/tags/JS removed before entering app logic.
-   * If validation fails, errors are returned as array (field, message), status 422.
+2. **Input Validation & Sanitization**
+   * All input (body, query, params, files) is validated by field validator before reaching controllers.
+   * Fields: required, optional, string, number, boolean, range, enum, regex, custom, file, object, array.
+   * Strings are sanitized (XSS, dangerous HTML, tags, JS removed) before processing.
+   * On validation failure → returns status `422` with `errors` array (field, message).
 
-3. **Error Format:**
-   * Every error uses RFC7807, so clients always receive `status`, `type`, `title`, `detail`, and optional `errors` array.
-   * Purpose: Avoid ambiguity, make frontend/integration/automation easy.
+3. **Error Format**
+   * All errors follow RFC7807 → clients always get `status`, `type`, `title`, `detail`, optional `errors` array.
+   * Ensures clear, consistent error responses for frontend, integration, automation.
 
 ---
 
@@ -68,36 +67,43 @@ This project provides a robust and well-structured API boilerplate built with Ex
 ## 📂 Project Structure
 
 ```bash
-.
+src/
 ├── config/
-│   └── app.js                 # Application configuration (e.g., port, environment)
+│   └── app.js                   #   App settings (name, version, ports, etc)
 ├── controllers/
-│   └── all.js                 # Main controller for handling API requests
+│   └── all.js                   #   Main controller logic for API requests
 ├── helpers/
-│   ├── generateError.js       # Helper to generate RFC7807 error responses
-│   └── renderErrorPage.js     # Helper to render error pages
+│   └── response/
+│       ├── generator.js         #   Generates standard API response objects
+│       └── render.js            #   Renders API responses to client
 ├── middlewares/
-│   ├── fingerprint.js         # Unique identifier for user devices
-│   ├── logger.js              # Request logging middleware
-│   ├── response.js            # Response formatting middleware
-│   └── signature.js           # Request signature verification middleware
-├── modules
-│   └── global
-│       └── rules.js           # Global validation rules for input fields
+│   ├── fingerprint.js           #   Middleware for device fingerprinting
+│   ├── logger.js                #   Middleware for request logging
+│   ├── response.js              #   Middleware for formatting API responses
+│   └── signature.js             #   Middleware for verifying request signature
+├── modules/
+│   └── global/
+│       └── rules.js             #   Contains global validation rules
 ├── routes/
-│   ├── all.js                 # Route handler used for both /api/example and /api/secure
-│   ├── errors.js              # Route handler for error responses (prefix: /errors/:errorKey)
-│   └── general.js             # Route handler for /api/general
-├── server.js                  # Main server file to start the application
+│   ├── all.js                   #   Route for example + secure APIs
+│   ├── errors.js                #   Route for error responses
+│   └── general.js               #   Route for general APIs
+├── server.js                    #   App entry point and server setup
 ├── tests/
-│   ├── fingerprint.test.js    # Fingerprint middleware tests
-│   ├── response.test.js       # API response formatting tests
-│   ├── signature.test.js      # Signature generation and verification tests
-│   └── validator.test.js      # All input validation tests
-└── validator/
-    ├── field.js               # Input field validation and sanitization
-    ├── index.js
-    └── input.js               # Input validation rules and utilities
+│   ├── helpers/
+│   │   └── mock/
+│   │       └── data.js          #   Mock data used in tests
+│   ├── middlewares/
+│   │   ├── fingerprint.test.js  #   Test for fingerprint middleware
+│   │   ├── response.test.js     #   Test for response middleware
+│   │   └── signature.test.js    #   Test for signature middleware
+│   └── validators/
+│       └── validator.test.js    #   Test for validators logic
+└── utils/
+    └── validators/
+        ├── field.js             #   Field-level validation logic
+        ├── index.js             #   Validator module entry point
+        └── input.js             #   Input validation functions
 ```
 
 ## 🚀 One-click Deployment
@@ -146,10 +152,10 @@ Deploy this project to Railway with the button below:
 
 ## 📑 Documentation
 
-* [EXAMPLE.md](EXAMPLE.md) — example usage for routes, controllers, and middlewares
-* [REFERENCE.md](REFERENCE.md) — detailed API reference documentation
-* [CONTRIBUTING.md](CONTRIBUTING.md) — PR, commit, and code style guidelines
-* [SECURITY.md](SECURITY.md) — security policy and reporting
+* [EXAMPLE.md](EXAMPLE.md) — Example usage of routes, controllers, middlewares
+* [REFERENCE.md](REFERENCE.md) — Detailed API reference documentation
+* [CONTRIBUTING.md](CONTRIBUTING.md) — PR, commit, code style guidelines
+* [SECURITY.md](SECURITY.md) — Security policy and reporting process
 
 ## 💬 Community & Support
 
