@@ -3,7 +3,7 @@
  * - This module loads environment variables and exports application configuration settings.
  * - It includes application name, version, port, and error base URL.
  */
-require('dotenv').config({ debug: process.env.APP_DEBUG })
+require('dotenv').config({ debug: process.env.APP_DEBUG === 'true' })
 module.exports = {
   appName: process.env.APP_NAME || 'NeaCore API',
   appVersion: process.env.APP_VERSION || '1.0.0',
