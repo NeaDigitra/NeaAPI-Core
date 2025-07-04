@@ -78,8 +78,7 @@ function resolveClientAuth(req, parameter) {
 }
 
 /**
- * Signature Validation Middleware
- * - Validates the signature of incoming requests
+ * Exports
  */
 module.exports = Object.assign(validateSignature, {
   generateHash,

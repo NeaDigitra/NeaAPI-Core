@@ -1,7 +1,7 @@
 const router = require('express').Router()
-const allController = require('../controllers/all')
-const globalRules = require('../modules/global/rules')
-const { validateInput } = require('../validator/index')
+const allController = require('controllers/all')
+const globalRules = require('modules/global/rules')
+const { validateInput } = require('utils/validators/index')
 
 /**
   * Example Routes

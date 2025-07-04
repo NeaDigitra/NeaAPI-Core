@@ -1,4 +1,4 @@
-const { field } = require('../../validator/index')
+const { field } = require('utils/validators/index')
 
 /**
  * Validation Rules

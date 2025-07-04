@@ -1,17 +1,17 @@
 const supertest = require('supertest')
 const express = require('express')
-const { field, validateInput } = require('../validator')
-const { setFieldValue, runValidation } = require('../validator/input')
-const { sanitizeValue } = require('../validator/field')
+const { field, runValidation, sanitizeValue, setFieldValue, validateInput } = require('utils/validators/index')
 const {
   exampleValidInput,
   exampleInvalidEmailInput,
   exampleShortNameInput,
   exampleSanitizeInput,
-  exampleDuplicateBodyRaw,
   exampleDuplicateQueryInput
-} = require('./helpers/mockData')
+} = require('tests/helpers/mock/data')
 
+/**
+ * Validation Rules Example
+ */
 const exampleValidator = [
   field('name').isString().length({ min: 3, max: 30 }).sanitize(),
   field('email').isEmail().length({ min: 5, max: 50 }).sanitize(),
@@ -182,7 +182,6 @@ describe('Middleware: validateInput', () => {
     const badMiddleware = () => {
       throw new Error('Forced error')
     }
-    const validateInput = require('../validator/input').validateInput
     const mw = validateInput(() => { throw new Error() })
     const req = {}
     const res = {

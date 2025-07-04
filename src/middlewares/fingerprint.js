@@ -3,6 +3,7 @@ const crypto = require('crypto')
 /**
  * Generate Fingerprint Hash
  * - This function generates a unique fingerprint for the client based on their request headers.
+ * - It combines several headers to create a hash that identifies the client.
  */
 function generateFingerprint(request) {
   const clientUserAgent = request.headers['user-agent'] || ''
@@ -14,8 +15,7 @@ function generateFingerprint(request) {
 }
 
 /**
- * Fingerprint Middleware
- * - This middleware generates a unique fingerprint for each request based on the client's headers.
+ * Exports
  */
 module.exports = (req, res, next) => {
   req.fingerprint = generateFingerprint(req)

@@ -1,4 +1,4 @@
-const { errorBaseUrl } = require('../config/app')
+const { errorBaseUrl } = require('config/app')
 
 /**
  * Generate RFC7807 Error Response

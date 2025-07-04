@@ -2,11 +2,12 @@
   "name": "neaapi-core",
   "version": "1.0.0",
   "description": "NeaDigitra API Core Boilerplate With: - Input Validator - Signature Validator - RFC7807 Response Formatter",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "jest",
-    "test:coverage": "jest --coverage"
+    "start": "NODE_PATH=src node src/server.js",
+    "dev": "NODE_PATH=src nodemon src/server.js",
+    "test": "NODE_PATH=src jest",
+    "test:coverage": "NODE_PATH=src jest --coverage"
   },
   "engines": {
     "node": ">=22.16.0"
@@ -26,11 +27,17 @@
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "coveralls": "^3.1.1",
     "jest": "^30.0.4",
-    "supertest": "^7.1.1",
-    "coveralls": "^3.1.1"
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.1"
   },
   "jest": {
-    "coverageReporters": ["json", "lcov", "text", "clover"]
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover"
+    ]
   }
 }

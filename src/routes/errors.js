@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const responsePage = require('../helpers/renderErrorPage')
+const renderPage = require('helpers/response/render')
 
 /**
  * Error Documentation
@@ -7,7 +7,7 @@ const responsePage = require('../helpers/renderErrorPage')
  * - The errorKey is used to identify the specific error page to be served.
  */
 router.get('/:errorKey', (req, res) => {
-  return res.send(responsePage(req, req.params.errorKey))
+  return res.send(renderPage(req, req.params.errorKey))
 })
 
 /**

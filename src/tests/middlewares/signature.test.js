@@ -1,8 +1,8 @@
 const express = require('express')
 const supertest = require('supertest')
 const crypto = require('crypto')
-const validateSignature = require('../middlewares/signature')
-const apiResponse = require('../middlewares/response')
+const validateSignature = require('middlewares/signature')
+const apiResponse = require('middlewares/response')
 const secret = 'MYSECRET'
 
 function getSign(body = {}, query = {}) {

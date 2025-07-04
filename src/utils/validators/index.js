@@ -1,3 +1,5 @@
+const validatorField = require('./field')
+const validatorInput = require('./input')
 
 /**
  * Validation Middleware
@@ -5,6 +7,6 @@
  * - It includes field validation and input validation functions.
  */
 module.exports = {
-  field: require('./field').field,
-  validateInput: require('./input').validateInput
+  ...validatorField,
+  ...validatorInput
 }

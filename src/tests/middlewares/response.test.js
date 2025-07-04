@@ -3,7 +3,7 @@ describe('Middleware: apiResponse', () => {
   beforeEach(() => {
     app = require('express')()
     app.use(require('express').json())
-    app.use(require('../middlewares/response'))
+    app.use(require('middlewares/response'))
   })
 
   it('responds with success and HTTP 200', async () => {

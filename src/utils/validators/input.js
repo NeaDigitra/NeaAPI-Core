@@ -1,11 +1,11 @@
 const { sanitizeValue } = require('./field')
 
 /**
- * Validate Input Middleware
- * - This middleware validates the input data against the provided field rules.
+ * Validate Input
+ * - This function validates the input data against the provided field rules.
  * - It checks for required fields, data types, length, patterns, and custom rules.
  */
-function validateInputMiddleware(fieldRules) {
+function validateInput(fieldRules) {
   return function (req, res, next) {
     req.body = req.body || {}
     req.query = req.query || {}
@@ -250,8 +250,8 @@ function setFieldValue(inputData, fieldName, value) {
  * Exports
  */
 module.exports = {
-  setFieldValue: setFieldValue,
-  runValidation: runValidation,
-  resolveFieldValue: resolveFieldValue,
-  validateInput: validateInputMiddleware
+  resolveFieldValue,
+  runValidation,
+  setFieldValue,
+  validateInput
 }

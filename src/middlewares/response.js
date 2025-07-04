@@ -1,4 +1,4 @@
-const generateError = require('../helpers/generateError')
+const generateError = require('helpers/response/generator')
 
 /**
  * Generate Log Trace

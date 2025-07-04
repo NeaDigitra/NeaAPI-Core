@@ -1,4 +1,4 @@
-const generateError = require('./generateError')
+const generateError = require('./generator')
 
 /**
  * Escape HTML Special Characters  
