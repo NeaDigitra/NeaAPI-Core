@@ -1,0 +1,36 @@
+{
+  "name": "neaapi-core",
+  "version": "1.0.0",
+  "description": "NeaDigitra API Core Boilerplate With: - Input Validator - Signature Validator - RFC7807 Response Formatter",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NeaDigitra/NeaAPI-Core.git"
+  },
+  "author": "NeaByteLab",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NeaDigitra/NeaAPI-Core/issues"
+  },
+  "homepage": "https://github.com/NeaDigitra/NeaAPI-Core#readme",
+  "dependencies": {
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "jest": "^30.0.4",
+    "supertest": "^7.1.1",
+    "coveralls": "^3.1.1"
+  },
+  "jest": {
+    "coverageReporters": ["json", "lcov", "text", "clover"]
+  }
+}
