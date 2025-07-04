@@ -13,7 +13,12 @@ If you discover a security vulnerability, **please do not open a public issue.**
 **Choose one of these private channels:**
 
 * ✉️ **Email us directly:**
-  * `dev@neabyte.com`
+  * `dev@neadigitra.com` or `security@neadigitra.com`
+  - Subject: "[NeaAPI-Core Security] Vulnerability Report"
+  * Include:
+    - Steps to reproduce
+    - A clear description of the vulnerability
+    - Any relevant code snippets or logs
   
 * 🛡️ **Submit via GitHub Security Advisory:**
   * [Report privately](https://github.com/NeaDigitra/NeaAPI-Core/security/advisories/new)
