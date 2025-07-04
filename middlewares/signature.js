@@ -39,7 +39,6 @@ function buildDataString(req) {
   if (keys.length === 0) {
     return ''
   }
-  console.log(keys);
   const parts = keys.map(function (key) {
     let value = combined[key]
     if (Array.isArray(value)) {
