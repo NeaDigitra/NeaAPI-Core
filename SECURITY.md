@@ -15,7 +15,7 @@ If you discover a security vulnerability, **please do not open a public issue.**
 * ✉️ **Email us directly:**
 
   * `dev@neadigitra.com` or `security@neadigitra.com`
-  * Subject: "\[NeaAPI-Core Security] Vulnerability Report"
+  * Subject: "[NeaAPI-Core Security] Vulnerability Report"
   * Include:
     * Steps to reproduce
     * A clear description of the vulnerability
