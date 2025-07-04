@@ -16,7 +16,7 @@ function getSign(body = {}, query = {}) {
     else if (typeof value === 'object' && value !== null) value = JSON.stringify(value)
     return `${k}=${value}`
   }).join('&')
-  return crypto.createHash('sha256').update(dataString + secret).digest('hex')
+  return crypto.createHmac('sha256', secret).update(dataString).digest('hex')
 }
 
 describe('Middleware: validateSignature', () => {

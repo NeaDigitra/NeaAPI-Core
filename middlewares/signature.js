@@ -56,7 +56,7 @@ function buildDataString(req) {
  * - Creates a SHA-256 hash of the data string and secret
  */
 function generateHash(string, secret) {
-  return crypto.createHash('sha256').update(`${string}${secret}`).digest('hex')
+  return crypto.createHmac('sha256', secret).update(string).digest('hex')
 }
 
 /**
