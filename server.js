@@ -38,14 +38,14 @@ app.use(apiLogger)
 /**
  * API Routes
  * - Handles all API requests
- * - The 'api' route handles all API requests
- * - The 'api/secure' route is for secure endpoints that require authentication
- * - The 'api/general' route is for general endpoints that have specific authentication requirements
+ * - The 'example' route handles example-related requests
+ * - The 'general' route handles general requests
+ * - The 'secure' route handles secure requests with API signature validation
  * - The 'errors' route handles error-related requests
  */
-app.use('/api/example', require('./routes/example'))
+app.use('/api/example', require('./routes/all'))
 app.use('/api/general', require('./routes/general'))
-app.use('/api/secure', apiSignature, require('./routes/example'))
+app.use('/api/secure', apiSignature, require('./routes/all'))
 app.use('/errors', require('./routes/errors'))
 
 /**
