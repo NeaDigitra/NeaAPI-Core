@@ -5,32 +5,31 @@ const app = express()
  * Load Configuration
  * - This file contains the application name and version.
  */
-const { appName, appVersion, appPort, errorBaseUrl } = require('./config/app')
-
-/**
- * NeaCore Middlewares
- * - These middlewares are essential for the API's functionality.
- * - They handle logging, response formatting, request fingerprinting, and signature validation.
- */
-const apiLogger = require('./middlewares/logger')(appName)
-const apiResponse = require('./middlewares/response')
-const apiFingerprint = require('./middlewares/fingerprint')
-const apiSignature = require('./middlewares/signature')
+const { appName, appVersion, appPort, errorBaseUrl } = require('config/app')
 
 /**
  * Middleware Setup
- * - Limits request body size to 1MB
- * - Parses incoming JSON requests and urlencoded data
+ * - Disables the 'x-powered-by' header for security reasons
+ * - Sets up body parsing middleware for JSON and URL-encoded data with a limit of 1MB
+ * - This prevents the server from revealing its technology stack and limits the size of incoming requests
  */
 app.disable('x-powered-by')
 app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ extended: true, limit: '1mb' }))
 
 /**
- * Internal Middleware
- * - These middlewares are used for logging, response formatting, and request fingerprinting
- * - They are applied to all API requests to ensure consistent handling and logging
+ * Core Middleware
+ * - Sets up middleware for logging, response formatting, fingerprinting, and signature validation
+ * - The 'logger' middleware logs incoming requests to the console
+ * - The 'response' middleware formats API responses in a standardized way
+ * - The 'fingerprint' middleware generates a unique fingerprint for each request based on the client's headers
+ * - The 'signature' middleware validates the signature of incoming requests to ensure authenticity
+ * - The 'errors' route handles error-related requests
  */
+const apiLogger = require('middlewares/logger')(appName)
+const apiResponse = require('middlewares/response')
+const apiFingerprint = require('middlewares/fingerprint')
+const apiSignature = require('middlewares/signature')
 app.use(apiFingerprint)
 app.use(apiResponse)
 app.use(apiLogger)
@@ -43,10 +42,10 @@ app.use(apiLogger)
  * - The 'secure' route handles secure requests with API signature validation
  * - The 'errors' route handles error-related requests
  */
-app.use('/api/example', require('./routes/all'))
-app.use('/api/general', require('./routes/general'))
-app.use('/api/secure', apiSignature, require('./routes/all'))
-app.use('/errors', require('./routes/errors'))
+app.use('/api/example', require('routes/all'))
+app.use('/api/general', require('routes/general'))
+app.use('/api/secure', apiSignature, require('routes/all'))
+app.use('/errors', require('routes/errors'))
 
 /**
  * Catch-all Route
@@ -77,7 +76,6 @@ app.use((err, req, res, next) => {
 /**
  * Start the server
  * - Listens on the specified port from the configuration
- * - Logs the port and error base URL to the console
  */
 app.listen(parseInt(appPort, 10) || 3000, () => {
   console.log(`[${appName}-${appVersion}] Server started on port ${appPort || 3000}`)

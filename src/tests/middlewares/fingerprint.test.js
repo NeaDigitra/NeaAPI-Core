@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 const express = require('express')
 const supertest = require('supertest')
-const fingerprintMiddleware = require('../middlewares/fingerprint')
+const fingerprintMiddleware = require('middlewares/fingerprint')
 
 describe('Middleware: fingerprint', () => {
   let app

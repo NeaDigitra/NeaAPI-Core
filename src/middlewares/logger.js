@@ -1,6 +1,7 @@
 /**
  * Logger Middleware
  * - Logs incoming requests to the console
+ * - Useful for debugging and monitoring API usage
  */
 module.exports = (name) => (req, res, next) => {
   const { method, url } = req

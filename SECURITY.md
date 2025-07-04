@@ -13,14 +13,16 @@ If you discover a security vulnerability, **please do not open a public issue.**
 **Choose one of these private channels:**
 
 * ✉️ **Email us directly:**
+
   * `dev@neadigitra.com` or `security@neadigitra.com`
-  - Subject: "[NeaAPI-Core Security] Vulnerability Report"
+  * Subject: "[NeaAPI-Core Security] Vulnerability Report"
   * Include:
-    - Steps to reproduce
-    - A clear description of the vulnerability
-    - Any relevant code snippets or logs
-  
+    * Steps to reproduce
+    * A clear description of the vulnerability
+    * Any relevant code snippets or logs
+
 * 🛡️ **Submit via GitHub Security Advisory:**
+
   * [Report privately](https://github.com/NeaDigitra/NeaAPI-Core/security/advisories/new)
 
 > **Note:** Public issues are not monitored for security disclosures, and sensitive reports posted there may be visible to everyone. Please use private channels above so we can investigate and address the issue promptly.

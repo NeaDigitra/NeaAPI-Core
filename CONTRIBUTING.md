@@ -1,28 +1,30 @@
 # ✨ Contributing to NeaAPI-Core
 
 Thank you for your interest in improving **NeaAPI-Core**! 🚀
+
 Your help makes this project even better and more robust for everyone.
 
 ---
 
 ## 📝 How to Contribute
 
-- **Fork** this repository  
-- **Create** your feature branch: `git checkout -b feature/my-feature`  
-- **Commit** your changes with a clear message:  
-  - Format: `type(scope): message :emoji:`
-  - Example: `git commit -m "feat(api): add user signup endpoint :sparkles:"`
-- **Push** to your branch: `git push origin feature/my-feature`  
-- **Create a Pull Request** on GitHub
+* **Fork** this repository
+* **Create** your feature branch: `git checkout -b feature/my-feature`
+* **Commit** your changes with a clear message:
+  * Format: `type(scope): message :emoji:`
+  * Example: `git commit -m "feat(api): add user signup endpoint :sparkles:"`
+
+* **Push** to your branch: `git push origin feature/my-feature`
+* **Create a Pull Request** on GitHub
 
 ---
 
 ## 🧪 Testing
 
 * Please make sure your code passes all tests:
-
   * Run `npm install`
   * Run `npm test`
+
 * If you add new features, add or update unit tests where relevant!
 
 ---

@@ -13,11 +13,12 @@ RUN npm ci --only=production
 # Copy all project files into container
 COPY . .
 
-# Expose the port your app runs on (e.g., 3000)
+# Expose the port your app runs on
 EXPOSE 3000
 
-# Set default environment variable (can override at runtime)
+# Set default environment variables
 ENV NODE_ENV=production
+ENV NODE_PATH=src
 
 # Command to start your app
-CMD ["node", "server.js"]
+CMD ["node", "src/server.js"]
