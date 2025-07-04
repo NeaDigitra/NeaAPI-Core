@@ -8,10 +8,6 @@ const {
   exampleInvalidEmailInput,
   exampleShortNameInput,
   exampleSanitizeInput,
-  exampleInvalidBooleanInput,
-  exampleInvalidFileInput,
-  exampleInvalidArrayInput,
-  exampleInvalidObjectInput,
   exampleDuplicateBodyRaw,
   exampleDuplicateQueryInput
 } = require('./helpers/mockData')
@@ -110,7 +106,7 @@ describe('Middleware: validateInput', () => {
     })
 
     it('rejects string length too long', async () => {
-      const longName = 'a'.repeat(31333) // 31 karakter, melebihi max 30
+      const longName = 'a'.repeat(31333)
       const res = await supertest(app).post('/test').send({
         name: longName,
         email: 'valid@example.com'
@@ -128,8 +124,7 @@ describe('Middleware: validateInput', () => {
         body: {},
         query: { foo: 'bar' },
         params: {},
-        files: {},
-        rawBody: null
+        files: {}
       }
       const rules = [field('foo').isString()]
       const errors = runValidation(inputData, rules)
@@ -141,8 +136,7 @@ describe('Middleware: validateInput', () => {
         body: {},
         query: {},
         params: { userId: '12345' },
-        files: {},
-        rawBody: null
+        files: {}
       }
       const rules = [field('userId').isString()]
       const errors = runValidation(inputData, rules)
@@ -169,7 +163,7 @@ describe('Middleware: validateInput', () => {
     })
 
     it('detects duplicate body parameter', () => {
-      const input = { body: { foo: 1 }, query: {}, params: {}, files: {}, rawBody: exampleDuplicateBodyRaw }
+      const input = { body: { foo: [1, 1] }, query: {}, params: {}, files: {} }
       const result = runValidation(input, [field('foo').isNumber()])
       expect(result).toEqual(
         expect.arrayContaining([{ field: 'foo', message: 'Duplicate Body Parameter' }])
@@ -189,9 +183,7 @@ describe('Middleware: validateInput', () => {
       throw new Error('Forced error')
     }
     const validateInput = require('../validator/input').validateInput
-    // call middleware factory with bad function to simulate error
     const mw = validateInput(() => { throw new Error() })
-    // Can't easily test async middleware catch, so just ensure no crash by calling with mock req/res/next
     const req = {}
     const res = {
       api: jest.fn()
@@ -411,14 +403,14 @@ describe('sanitizeValue function', () => {
 // -------------------- runValidation --------------------
 describe('runValidation', () => {
   it('returns error if no rules provided', () => {
-    const result = runValidation({ body: {}, query: {}, params: {}, files: {}, rawBody: null }, null)
+    const result = runValidation({ body: {}, query: {}, params: {}, files: {} }, null)
     expect(result).toEqual([
       { field: '_config', message: 'Validator FieldRules Invalid Or Missing' }
     ])
   })
 
   it('returns error if rule invalid', () => {
-    const result = runValidation({ body: {}, query: {}, params: {}, files: {}, rawBody: null }, [{}])
+    const result = runValidation({ body: {}, query: {}, params: {}, files: {} }, [{}])
     expect(result).toEqual([
       { field: '_config', message: 'Invalid Rule Detected' }
     ])
@@ -427,7 +419,7 @@ describe('runValidation', () => {
   it('validates custom rule failure', () => {
     const rule = field('test').custom(val => val === 'ok' ? true : 'failed')
     const result = runValidation(
-      { body: { test: 'no' }, query: {}, params: {}, files: {}, rawBody: null },
+      { body: { test: 'no' }, query: {}, params: {}, files: {} },
       [rule]
     )
     expect(result).toEqual([
@@ -438,7 +430,7 @@ describe('runValidation', () => {
   it('rejects boolean with invalid values', () => {
     const rule = field('flag').isBoolean()
     const errors = runValidation(
-      { body: { flag: 'notboolean' }, query: {}, params: {}, files: {}, rawBody: null },
+      { body: { flag: 'notboolean' }, query: {}, params: {}, files: {} },
       [rule]
     )
     expect(errors).toEqual([
@@ -449,7 +441,7 @@ describe('runValidation', () => {
   it('rejects file without originalname', () => {
     const rule = field('file').isFile()
     const errors = runValidation(
-      { body: {}, query: {}, params: {}, files: { file: {} }, rawBody: null },
+      { body: {}, query: {}, params: {}, files: { file: {} } },
       [rule]
     )
     expect(errors).toEqual([
@@ -460,7 +452,7 @@ describe('runValidation', () => {
   it('rejects array if not array', () => {
     const rule = field('list').isArray()
     const errors = runValidation(
-      { body: { list: 'notarray' }, query: {}, params: {}, files: {}, rawBody: null },
+      { body: { list: 'notarray' }, query: {}, params: {}, files: {} },
       [rule]
     )
     expect(errors).toEqual([
@@ -471,7 +463,7 @@ describe('runValidation', () => {
   it('rejects object if not object', () => {
     const rule = field('obj').isObject()
     const errors = runValidation(
-      { body: { obj: 'notobject' }, query: {}, params: {}, files: {}, rawBody: null },
+      { body: { obj: 'notobject' }, query: {}, params: {}, files: {} },
       [rule]
     )
     expect(errors).toEqual([
@@ -481,12 +473,12 @@ describe('runValidation', () => {
 
   it('returns no error for optional field with undefined value', () => {
     const rules = [field('optionalField').isString().optional()]
-    const result = runValidation({ body: {}, query: {}, params: {}, files: {}, rawBody: null }, rules)
+    const result = runValidation({ body: {}, query: {}, params: {}, files: {} }, rules)
     expect(result).toHaveLength(0)
   })
 
   it('sanitizes value and sets field correctly', () => {
-    const inputData = { body: { name: '<script>alert(1)</script>John' }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: { name: '<script>alert(1)</script>John' }, query: {}, params: {}, files: {} }
     const rules = [field('name').isString().sanitize()]
     const result = runValidation(inputData, rules)
     expect(result).toHaveLength(0)
@@ -498,8 +490,7 @@ describe('runValidation', () => {
       body: { a: 1 },
       query: { b: 2 },
       params: { c: 3 },
-      files: {},
-      rawBody: null
+      files: {}
     }
     setFieldValue(inputData, 'a', 10)
     setFieldValue(inputData, 'b', 20)
@@ -510,7 +501,7 @@ describe('runValidation', () => {
   })
 
   it('handles unexpected fieldRules types gracefully', () => {
-    const inputData = { body: {}, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: {}, query: {}, params: {}, files: {} }
     const invalidRules = [null, {}, { fieldName: null }, { fieldName: '' }]
     const result = runValidation(inputData, invalidRules)
     expect(result).toEqual(
@@ -520,7 +511,7 @@ describe('runValidation', () => {
 
   it('validates enum with invalid values', () => {
     const rule = field('role').enum(['admin', 'user'])
-    const inputData = { body: { role: 'guest' }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: { role: 'guest' }, query: {}, params: {}, files: {} }
     const errors = runValidation(inputData, [rule])
     expect(errors).toEqual(
       expect.arrayContaining([{ field: 'role', message: 'Invalid Value' }])
@@ -529,7 +520,7 @@ describe('runValidation', () => {
 
   it('runs custom rules and detects failures', () => {
     const rule = field('custom').custom(val => val === 'pass' ? true : 'fail')
-    const inputData = { body: { custom: 'fail' }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: { custom: 'fail' }, query: {}, params: {}, files: {} }
     const errors = runValidation(inputData, [rule])
     expect(errors).toEqual(
       expect.arrayContaining([{ field: 'custom', message: 'fail' }])
@@ -537,14 +528,14 @@ describe('runValidation', () => {
   })
 
   it('handles edge case of empty fieldRules array', () => {
-    const result = runValidation({ body: {}, query: {}, params: {}, files: {}, rawBody: null }, [])
+    const result = runValidation({ body: {}, query: {}, params: {}, files: {} }, [])
     expect(result).toEqual([
       { field: '_config', message: 'Validator FieldRules Invalid Or Missing' }
     ])
   })
 
   it('detects invalid singleRule objects', () => {
-    const inputData = { body: {}, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: {}, query: {}, params: {}, files: {} }
     const invalidRules = [null, {}, { fieldName: null }, { fieldName: '' }]
     const result = runValidation(inputData, invalidRules)
     expect(result).toEqual(
@@ -554,8 +545,8 @@ describe('runValidation', () => {
 
   it('checks numeric range boundaries properly', () => {
     const rule = field('num').isNumber().range({ min: 10, max: 20 })
-    const inputDataLow = { body: { num: 5 }, query: {}, params: {}, files: {}, rawBody: null }
-    const inputDataHigh = { body: { num: 25 }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputDataLow = { body: { num: 5 }, query: {}, params: {}, files: {} }
+    const inputDataHigh = { body: { num: 25 }, query: {}, params: {}, files: {} }
     expect(runValidation(inputDataLow, [rule])).toEqual(
       expect.arrayContaining([{ field: 'num', message: 'Number Too Small' }])
     )
@@ -566,14 +557,14 @@ describe('runValidation', () => {
 
   it('validates regex pattern mismatch', () => {
     const rule = field('code').isString().pattern(/^ABC\d{3}$/)
-    const inputData = { body: { code: 'XYZ123' }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: { code: 'XYZ123' }, query: {}, params: {}, files: {} }
     expect(runValidation(inputData, [rule])).toEqual(
       expect.arrayContaining([{ field: 'code', message: 'Pattern Mismatch' }])
     )
   })
 
   it('sets field value correctly when sanitizing', () => {
-    const inputData = { body: { text: '<script>bad</script>' }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: { text: '<script>bad</script>' }, query: {}, params: {}, files: {} }
     const rule = field('text').isString().sanitize()
     const errors = runValidation(inputData, [rule])
     expect(errors.length).toBe(1)
@@ -583,7 +574,7 @@ describe('runValidation', () => {
   it('rejects wrong type for string and number', () => {
     const stringRule = field('str').isString()
     const numberRule = field('num').isNumber()
-    const inputData = { body: { str: 123, num: 'abc' }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: { str: 123, num: 'abc' }, query: {}, params: {}, files: {} }
     const errors = runValidation(inputData, [stringRule, numberRule])
     expect(errors).toEqual(
       expect.arrayContaining([
@@ -595,7 +586,7 @@ describe('runValidation', () => {
 
   it('rejects invalid boolean values', () => {
     const rule = field('flag').isBoolean()
-    const inputData = { body: { flag: 'notbool' }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: { flag: 'notbool' }, query: {}, params: {}, files: {} }
     const errors = runValidation(inputData, [rule])
     expect(errors).toEqual(
       expect.arrayContaining([{ field: 'flag', message: 'Must Be Boolean' }])
@@ -604,7 +595,7 @@ describe('runValidation', () => {
 
   it('rejects invalid file object', () => {
     const rule = field('file').isFile()
-    const inputData = { body: {}, query: {}, params: {}, files: { file: {} }, rawBody: null }
+    const inputData = { body: {}, query: {}, params: {}, files: { file: {} } }
     const errors = runValidation(inputData, [rule])
     expect(errors).toEqual(
       expect.arrayContaining([{ field: 'file', message: 'Invalid File' }])
@@ -613,7 +604,7 @@ describe('runValidation', () => {
 
   it('rejects non-array for array type', () => {
     const rule = field('list').isArray()
-    const inputData = { body: { list: 'notarray' }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: { list: 'notarray' }, query: {}, params: {}, files: {} }
     const errors = runValidation(inputData, [rule])
     expect(errors).toEqual(
       expect.arrayContaining([{ field: 'list', message: 'Must Be Array' }])
@@ -622,7 +613,7 @@ describe('runValidation', () => {
 
   it('rejects non-object for object type', () => {
     const rule = field('obj').isObject()
-    const inputData = { body: { obj: 'notobject' }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: { obj: 'notobject' }, query: {}, params: {}, files: {} }
     const errors = runValidation(inputData, [rule])
     expect(errors).toEqual(
       expect.arrayContaining([{ field: 'obj', message: 'Must Be Object' }])
@@ -634,8 +625,7 @@ describe('runValidation', () => {
       body: { a: 1 },
       query: { b: 2 },
       params: { c: 3 },
-      files: {},
-      rawBody: null
+      files: {}
     }
     setFieldValue(inputData, 'a', 10)
     setFieldValue(inputData, 'b', 20)
@@ -649,44 +639,51 @@ describe('runValidation', () => {
 // -------------------- setFieldValue --------------------
 describe('setFieldValue', () => {
   it('updates body property', () => {
-    const inputData = { body: { a: 1 }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: { a: 1 }, query: {}, params: {}, files: {} }
     setFieldValue(inputData, 'a', 42)
     expect(inputData.body.a).toBe(42)
   })
+
   it('updates query property', () => {
-    const inputData = { body: {}, query: { b: 2 }, params: {}, files: {}, rawBody: null }
+    const inputData = { body: {}, query: { b: 2 }, params: {}, files: {} }
     setFieldValue(inputData, 'b', 99)
     expect(inputData.query.b).toBe(99)
   })
+
   it('updates params property', () => {
-    const inputData = { body: {}, query: {}, params: { c: 3 }, files: {}, rawBody: null }
+    const inputData = { body: {}, query: {}, params: { c: 3 }, files: {} }
     setFieldValue(inputData, 'c', 123)
     expect(inputData.params.c).toBe(123)
   })
+
   it('does nothing if field not found', () => {
-    const inputData = { body: {}, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: {}, query: {}, params: {}, files: {} }
     setFieldValue(inputData, 'nonexistent', 'value')
     expect(inputData.body).toEqual({})
     expect(inputData.query).toEqual({})
     expect(inputData.params).toEqual({})
   })
+
   it('updates field in body', () => {
-    const inputData = { body: { a: 1 }, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: { a: 1 }, query: {}, params: {}, files: {} }
     setFieldValue(inputData, 'a', 42)
     expect(inputData.body.a).toBe(42)
   })
+
   it('updates field in query', () => {
-    const inputData = { body: {}, query: { b: 2 }, params: {}, files: {}, rawBody: null }
+    const inputData = { body: {}, query: { b: 2 }, params: {}, files: {} }
     setFieldValue(inputData, 'b', 99)
     expect(inputData.query.b).toBe(99)
   })
+
   it('updates field in params', () => {
-    const inputData = { body: {}, query: {}, params: { c: 3 }, files: {}, rawBody: null }
+    const inputData = { body: {}, query: {}, params: { c: 3 }, files: {} }
     setFieldValue(inputData, 'c', 123)
     expect(inputData.params.c).toBe(123)
   })
+
   it('does not update if field not found', () => {
-    const inputData = { body: {}, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: {}, query: {}, params: {}, files: {} }
     setFieldValue(inputData, 'nonexistent', 'value')
     expect(inputData.body).toEqual({})
     expect(inputData.query).toEqual({})
@@ -697,7 +694,7 @@ describe('setFieldValue', () => {
 // -------------------- Extra/Edge Coverage --------------------
 describe('Extra/Edge Coverage', () => {
   test('runValidation returns error if fieldRules invalid (null or empty)', () => {
-    const inputData = { body: {}, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: {}, query: {}, params: {}, files: {} }
     const errors1 = runValidation(inputData, null)
     const errors2 = runValidation(inputData, [])
     expect(errors1).toEqual(expect.arrayContaining([{ field: '_config', message: 'Validator FieldRules Invalid Or Missing' }]))
@@ -705,7 +702,7 @@ describe('Extra/Edge Coverage', () => {
   })
 
   test('runValidation detects invalid rule objects', () => {
-    const inputData = { body: {}, query: {}, params: {}, files: {}, rawBody: null }
+    const inputData = { body: {}, query: {}, params: {}, files: {} }
     const invalidRules = [null, {}, { fieldName: null }, { fieldName: '' }]
     const errors = runValidation(inputData, invalidRules)
     expect(errors).toEqual(expect.arrayContaining([{ field: '_config', message: 'Invalid Rule Detected' }]))
