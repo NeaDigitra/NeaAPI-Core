@@ -37,9 +37,13 @@ jobs:
 
           FAIL=0
           while read -r line; do
+            # Skip merge commits
+            if [[ "$line" =~ ^Merge ]]; then
+              continue
+            fi
             if ! [[ "$line" =~ $ALLOWED ]]; then
               echo "::error::Invalid commit message format: \"$line\""
-              echo "::error::Commit messages must match the pattern: <type>(<scope>): <subject> :<emoji>:"
+              echo "::error::Commit messages must match the pattern: <type>(<scope>): <subject> :emoji:"
               echo "::error::Example: feat(api): add payment endpoint :sparkles:"
               FAIL=1
             fi
