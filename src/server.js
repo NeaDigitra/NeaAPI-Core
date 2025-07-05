@@ -6,6 +6,7 @@ const app = express()
  * - This file contains the application name and version.
  */
 const { appName, appVersion, appPort, errorBaseUrl } = require('config/app')
+const dbClient = require('config/db')
 
 /**
  * Middleware Setup
@@ -32,11 +33,22 @@ const apiResponse = require('middlewares/response')
 const apiFingerprint = require('middlewares/fingerprint')
 const apiSignature = require('middlewares/signature')
 const apiRateLimit = require('middlewares/ratelimit')
+const apiSession = require('middlewares/session')
 const apiCors = require('middlewares/cors')
 app.use(apiFingerprint)
 app.use(apiResponse)
 app.use(apiLogger)
 app.use(apiCors)
+
+/**
+ * Database Client Middleware
+ * - This middleware injects the database client into the request object
+ * - It allows routes to access the database client without needing to import it directly
+ */
+app.use((req, res, next) => {
+  req.dbClient = dbClient
+  next()
+})
 
 /**
  * API Routes
@@ -48,7 +60,7 @@ app.use(apiCors)
  */
 app.use('/api/example', require('routes/all'))
 app.use('/api/general', apiRateLimit.setup, require('routes/general'))
-app.use('/api/secure', apiRateLimit.setup, apiSignature, require('routes/all'))
+app.use('/api/secure', apiRateLimit.setup, apiSession, apiSignature, require('routes/all'))
 app.use('/errors', require('routes/errors'))
 
 /**
