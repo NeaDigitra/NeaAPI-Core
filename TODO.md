@@ -9,10 +9,10 @@ This document outlines planned features, improvements, and completed milestones 
 - [ ] 📄 **API Documentation Generator**  
   Auto-generate OpenAPI/Swagger documentation from route definitions and validation schemas for easy integration and client consumption.
 
-- [ ] 🗄️ **Database Integration**  
+- [x] 🗄️ **Database Integration**  
   Integrate relational databases such as MySQL or PostgreSQL using an ORM like Knex.js to enable persistent storage.
 
-- [ ] 🔐 **Full Signature Verification**  
+- [x] 🔐 **Full Signature Verification**  
   Implement robust request signature verification to ensure security and prevent tampering and replay attacks.
 
 ---
