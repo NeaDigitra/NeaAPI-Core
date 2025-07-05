@@ -7,7 +7,8 @@
     "start": "NODE_PATH=src node src/server.js",
     "dev": "NODE_PATH=src nodemon src/server.js",
     "test": "NODE_PATH=src jest --runInBand --detectOpenHandles --forceExit",
-    "test:coverage": "NODE_PATH=src jest --coverage --runInBand --detectOpenHandles --forceExit"
+    "test:coverage": "NODE_PATH=src jest --coverage --runInBand --detectOpenHandles --forceExit",
+    "migrate": "knex migrate:latest --knexfile ./src/knexfile.js && knex seed:run --knexfile ./src/knexfile.js"
   },
   "engines": {
     "node": ">=22.16.0"
@@ -26,6 +27,9 @@
     "axios": "^1.10.0",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
+    "knex": "^3.1.0",
+    "mysql2": "^3.14.1",
+    "pg": "^8.16.3",
     "redis": "^5.5.6"
   },
   "devDependencies": {
