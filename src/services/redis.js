@@ -1,4 +1,4 @@
-const { appName, appVersion, appPort, errorBaseUrl } = require('config/app')
+const { appName } = require('config/app')
 const redis = require('redis')
 
 /**
