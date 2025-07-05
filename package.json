@@ -6,8 +6,8 @@
   "scripts": {
     "start": "NODE_PATH=src node src/server.js",
     "dev": "NODE_PATH=src nodemon src/server.js",
-    "test": "NODE_PATH=src jest",
-    "test:coverage": "NODE_PATH=src jest --coverage"
+    "test": "NODE_PATH=src jest --detectOpenHandles --forceExit",
+    "test:coverage": "NODE_PATH=src jest --coverage --detectOpenHandles --forceExit"
   },
   "engines": {
     "node": ">=22.16.0"
