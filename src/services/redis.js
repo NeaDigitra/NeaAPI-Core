@@ -2,26 +2,23 @@ const { appName } = require('config/app')
 const redis = require('redis')
 
 /**
- * Redis Client Configuration
- * - This module exports a Redis client instance configured with environment variables.
+ * Create Redis Client
+ * - This function initializes a Redis client with the provided configuration.
+ * - It connects to the Redis server using the URL and password from environment variables.
  */
-const redisClient = redis.createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379',
-  password: process.env.REDIS_PASSWORD || undefined
-})
-
-/**
- * Event Listeners
- * - Handles connection errors and logs when the client is ready.
- * - This is crucial for debugging and ensuring the Redis client is operational.
- */
-redisClient.on('error', (err) => {
-  console.error(`[${appName}-Redis] Client Error:`, err.stack)
-}).on('ready', () => {
-  console.log(`[${appName}-Redis] Client Connected Successfully`)
-}).connect()
+function createRedisClient() {
+  const client = redis.createClient({
+    url: process.env.REDIS_URL || 'redis://localhost:6379',
+    password: process.env.REDIS_PASSWORD || undefined
+  })
+  if (process.env.NODE_ENV !== 'test') {
+    client.on('error', (err) => console.error(`[${appName}-Redis] Client Error:`, err.stack))
+    client.on('ready', () => console.log(`[${appName}-Redis] Client Connected Successfully`))
+  }
+  return client
+}
 
 /**
  * Exports
  */
-module.exports = redisClient
+module.exports = createRedisClient

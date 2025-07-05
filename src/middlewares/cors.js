@@ -1,109 +1,64 @@
 /**
  * Generate CORS Configuration
- * - This function generates the CORS configuration object based on environment variables.
- * - It checks for allowed origins, headers, methods, and other CORS settings.
+ * - This function generates the CORS configuration based on environment variables.
+ * - It allows for flexible configuration of allowed origins, headers, methods, and other CORS
  */
 function generateConfiguration() {
-  const environmentVariables = process.env
-  const allowedOriginEnvironment = environmentVariables.CORS_ORIGIN
-  let allowedOriginList = []
-  let allowAllOrigins = false
-  if (!!allowedOriginEnvironment) {
-    if (allowedOriginEnvironment.trim() === '*') {
-      allowAllOrigins = true
-    } else {
-      allowedOriginList = allowedOriginEnvironment.split(',').map(eachOrigin => eachOrigin.trim()).filter(eachOrigin => {
-        if (!!eachOrigin && /^https?:\/\/[a-zA-Z0-9.-]+(:\d+)?$/.test(eachOrigin)) {
-          return true
-        } else {
-          return false
-        }
-      })
-    }
-  }
-  if (!(allowedOriginList.length) && !(allowAllOrigins)) {
+  const env = process.env
+  const originsRaw = env.CORS_ORIGIN || ''
+  let allowAllOrigins = originsRaw.trim() === '*'
+  let allowedOriginList = allowAllOrigins ? [] :
+    originsRaw.split(',')
+      .map(o => o.trim())
+      .filter(Boolean)
+      .filter(o => /^https?:\/\/[a-zA-Z0-9.-]+(:\d+)?$/.test(o))
+  if (!(allowAllOrigins) && !(allowedOriginList.length)) {
     allowedOriginList = ['https://yourdomain.com']
   }
-  let allowedHeadersList = []
-  if (!!environmentVariables.CORS_ALLOWED_HEADERS) {
-    allowedHeadersList = environmentVariables.CORS_ALLOWED_HEADERS.split(',').map(eachHeader => eachHeader.trim().toLowerCase())
-  } else {
-    allowedHeadersList = ['content-type', 'authorization', 'x-requested-with']
-  }
-  let exposedHeadersList = []
-  if (!!environmentVariables.CORS_EXPOSED_HEADERS) {
-    exposedHeadersList = environmentVariables.CORS_EXPOSED_HEADERS.split(',').map(eachHeader => eachHeader.trim())
-  }
+  const allowedHeaders = (env.CORS_ALLOWED_HEADERS || 'content-type,authorization,x-requested-with').split(',').map(h => h.trim().toLowerCase()).filter(Boolean)
+  const exposedHeaders = (env.CORS_EXPOSED_HEADERS || '').split(',').map(h => h.trim()).filter(Boolean)
   return {
     allowAllOrigins,
     allowedOriginList,
-    credentials: !!environmentVariables.CORS_CREDENTIALS && environmentVariables.CORS_CREDENTIALS === 'true',
-    methods: !!environmentVariables.CORS_METHODS ? environmentVariables.CORS_METHODS.split(',').map(eachMethod => eachMethod.trim()) : ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: allowedHeadersList,
-    exposedHeaders: exposedHeadersList,
-    maxAge: !!environmentVariables.CORS_MAX_AGE ? Number(environmentVariables.CORS_MAX_AGE) : 86400,
-    optionsSuccessStatus: !!environmentVariables.CORS_OPTIONS_STATUS ? Number(environmentVariables.CORS_OPTIONS_STATUS) : 204
+    credentials: env.CORS_CREDENTIALS === 'true',
+    methods: (env.CORS_METHODS || 'GET,POST,PUT,DELETE,OPTIONS').split(',').map(m => m.trim()).filter(Boolean),
+    allowedHeaders,
+    exposedHeaders,
+    maxAge: Number(env.CORS_MAX_AGE) || 86400,
+    optionsSuccessStatus: Number(env.CORS_OPTIONS_STATUS) || 204
   }
 }
 
 /**
  * CORS Middleware
- * - This middleware handles Cross-Origin Resource Sharing (CORS) requests.
- * - It checks the request's origin against allowed origins and sets appropriate headers.
+ * - This middleware handles CORS requests by setting appropriate headers based on the configuration.
+ * - It checks the request origin against allowed origins and responds accordingly.
  */
-function corsMiddleware(requestData, responseData, nextHandler) {
-  const corsConfiguration = generateConfiguration()
-  const allowedOriginValue = process.env.CORS_ORIGIN || ''
-  const requestOriginValue = requestData.get('Origin')
-  let allowOriginHeaderValue = ''
-  if (allowedOriginValue === '*') {
-    if (corsConfiguration.credentials && !!(requestOriginValue)) {
-      allowOriginHeaderValue = requestOriginValue
-    } else {
-      if (!(requestOriginValue)) {
-        allowOriginHeaderValue = '*'
-      } else {
-        allowOriginHeaderValue = requestOriginValue
-      }
-    }
+function corsMiddleware(req, res, next) {
+  const config = generateConfiguration()
+  const origin = req.get('Origin')
+  let allowOriginValue = ''
+  if (config.allowAllOrigins) {
+    allowOriginValue = config.credentials && origin ? origin : '*'
+  } else if (origin && config.allowedOriginList.includes(origin)) {
+    allowOriginValue = origin
   } else {
-    if (!!(requestOriginValue)) {
-      if (
-        (!!allowedOriginValue && corsConfiguration.allowedOriginList.includes(requestOriginValue)) ||
-        (!allowedOriginValue && corsConfiguration.allowedOriginList.includes(requestOriginValue))
-      ) {
-        allowOriginHeaderValue = requestOriginValue
-      } else {
-        return responseData.api('forbidden')
-      }
-    } else {
-      return responseData.api('forbidden')
-    }
+    return res.api('forbidden')
   }
-  responseData.set('Access-Control-Allow-Origin', allowOriginHeaderValue)
-  if (!!corsConfiguration.allowedHeaders && corsConfiguration.allowedHeaders.length > 0) {
-    responseData.set('Access-Control-Allow-Headers', corsConfiguration.allowedHeaders.join(','))
-  }
-  if (!!corsConfiguration.methods && corsConfiguration.methods.length > 0) {
-    responseData.set('Access-Control-Allow-Methods', corsConfiguration.methods.join(','))
-  }
-  if (!!corsConfiguration.credentials) {
-    responseData.set('Access-Control-Allow-Credentials', 'true')
-  }
-  if (!!corsConfiguration.maxAge) {
-    responseData.set('Access-Control-Max-Age', corsConfiguration.maxAge.toString())
-  }
-  if (!!corsConfiguration.exposedHeaders && corsConfiguration.exposedHeaders.length > 0) {
-    responseData.set('Access-Control-Expose-Headers', corsConfiguration.exposedHeaders.join(','))
-  }
-  if (requestData.method === 'OPTIONS') {
-    responseData.sendStatus(corsConfiguration.optionsSuccessStatus)
+  res.set('Access-Control-Allow-Origin', allowOriginValue)
+  res.set('Access-Control-Allow-Headers', config.allowedHeaders.join(','))
+  res.set('Access-Control-Allow-Methods', config.methods.join(','))
+  if (config.credentials) res.set('Access-Control-Allow-Credentials', 'true')
+  if (config.maxAge) res.set('Access-Control-Max-Age', config.maxAge.toString())
+  if (config.exposedHeaders.length) res.set('Access-Control-Expose-Headers', config.exposedHeaders.join(','))
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(config.optionsSuccessStatus)
     return
   }
-  nextHandler()
+  next()
 }
 
 /**
- * Exports
+ * Export
  */
 module.exports = corsMiddleware

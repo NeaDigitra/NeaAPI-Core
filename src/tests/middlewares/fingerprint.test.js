@@ -33,7 +33,7 @@ describe('Middleware: fingerprint', () => {
   })
 
   it('generates fingerprint with empty strings when headers missing', async () => {
-    const res = await supertest(app).get('/') // no special headers
+    const res = await supertest(app).get('/')
     const combinedRawData = '|||'
     const expectedHash = crypto.createHash('sha256').update(combinedRawData).digest('hex')
     expect(res.status).toBe(200)

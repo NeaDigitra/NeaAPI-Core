@@ -1,19 +1,22 @@
+jest.mock('axios', () => ({ get: jest.fn().mockResolvedValue({ data: '' }) }))
+const mockRedis = {
+  get: jest.fn(),
+  set: jest.fn(),
+  incr: jest.fn(),
+  quit: jest.fn(),
+  on: jest.fn().mockReturnThis(),
+  connect: jest.fn().mockReturnThis(),
+}
+jest.mock('services/redis', () => jest.fn(() => mockRedis))
+
 const request = require('supertest')
 const express = require('express')
-const axios = require('axios')
-const redisClient = require('services/redis')
 const ratelimit = require('middlewares/ratelimit')
 const { setup, initCloudflareIpService, updateCloudflareIps, convertIpv6ToBigint } = ratelimit
 
-jest.mock('axios', () => ({ get: jest.fn().mockResolvedValue({ data: '' }) }))
-jest.mock('services/redis', () => ({
-  get: jest.fn(),
-  set: jest.fn(),
-  incr: jest.fn()
-}))
-
 describe('Rate Limit Middleware', () => {
   let app
+
   beforeAll(async () => {
     app = express()
     app.use(setup)
@@ -27,44 +30,44 @@ describe('Rate Limit Middleware', () => {
   })
 
   it('should call next() if cloudflare ip valid', async () => {
-    redisClient.get.mockResolvedValue('1')
-    redisClient.incr.mockResolvedValue(2)
+    mockRedis.get.mockResolvedValue('1')
+    mockRedis.incr.mockResolvedValue(2)
     const response = { api: jest.fn() }
-    const request = {
+    const requestObj = {
       connection: { remoteAddress: '173.245.48.1' },
       headers: {},
       ip: '173.245.48.1'
     }
     const next = jest.fn()
-    await setup(request, response, next)
+    await setup(requestObj, response, next)
     expect(next).toHaveBeenCalled()
   })
 
   it('should allow first request and set redis key', async () => {
-    redisClient.get.mockResolvedValue(null)
-    redisClient.set.mockResolvedValue('OK')
+    mockRedis.get.mockResolvedValue(null)
+    mockRedis.set.mockResolvedValue('OK')
     const res = await request(app).get('/test').set('cf-connecting-ip', '1.1.1.1')
     expect(res.statusCode).toBe(200)
     expect(res.body.success).toBe(true)
   })
 
   it('should increment redis key if under limit', async () => {
-    redisClient.get.mockResolvedValue('1')
-    redisClient.incr.mockResolvedValue(2)
+    mockRedis.get.mockResolvedValue('1')
+    mockRedis.incr.mockResolvedValue(2)
     const res = await request(app).get('/test').set('cf-connecting-ip', '1.1.1.1')
     expect(res.statusCode).toBe(200)
     expect(res.body.success).toBe(true)
   })
 
   it('should block request if over limit', async () => {
-    redisClient.get.mockResolvedValue('100')
+    mockRedis.get.mockResolvedValue('100')
     const res = await request(app).get('/test').set('cf-connecting-ip', '173.245.48.1')
     expect(res.statusCode).toBe(500)
   })
 
   it('should skip rate limit for local IP', async () => {
-    redisClient.get.mockResolvedValue(null)
-    redisClient.set.mockResolvedValue('OK')
+    mockRedis.get.mockResolvedValue(null)
+    mockRedis.set.mockResolvedValue('OK')
     const res = await request(app).get('/test').set('cf-connecting-ip', '127.0.0.1')
     expect(res.statusCode).toBe(200)
   })
@@ -73,23 +76,23 @@ describe('Rate Limit Middleware', () => {
     const originalIps = ratelimit.__get__ ? ratelimit.__get__('cloudflareIps') : null
     if (ratelimit.__set__) ratelimit.__set__('cloudflareIps', ['1.1.1.0/24'])
     const response = { api: jest.fn() }
-    const request = {
+    const requestObj = {
       connection: { remoteAddress: '8.8.8.8' },
       headers: {},
       ip: '8.8.8.8'
     }
-    await setup(request, response, () => { })
+    await setup(requestObj, response, () => { })
     expect(response.api).toHaveBeenCalledWith('forbidden')
     if (ratelimit.__set__) ratelimit.__set__('cloudflareIps', originalIps)
   })
 
   it('should fallback to defaultCloudflareIps on axios error', async () => {
-    axios.get.mockRejectedValueOnce(new Error('axios fail'))
+    require('axios').get.mockRejectedValueOnce(new Error('axios fail'))
     await expect(updateCloudflareIps()).resolves.toBeUndefined()
   })
 
   it('should update cloudflareIps if axios get success', async () => {
-    axios.get
+    require('axios').get
       .mockResolvedValueOnce({ data: '10.0.0.0/24\n10.0.1.0/24' })
       .mockResolvedValueOnce({ data: 'abcd::/64\nbeef::/64' })
     await updateCloudflareIps()
@@ -111,7 +114,7 @@ describe('Rate Limit Middleware', () => {
 })
 
 describe('Ratelimit Helper Functions', () => {
-  const { ipToLong, checkIpv4InCidr, convertIpv6ToBigint, checkIpv6InCidr, checkIpInCidrList } = ratelimit
+  const { ipToLong, checkIpv4InCidr, convertIpv6ToBigint, checkIpv6InCidr, checkIpInCidrList } = require('middlewares/ratelimit')
   it('ipToLong should work', () => {
     expect(ipToLong('127.0.0.1')).toBe(2130706433)
   })
