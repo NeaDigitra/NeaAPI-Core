@@ -52,61 +52,6 @@ This project provides a robust and well-structured API boilerplate built with Ex
 
 ---
 
-## 📝 TODO
-
-* [ ] **API Docs Generator**: Auto-generate OpenAPI/Swagger docs from routes & validators.
-* [ ] **Database Integration**: Set up MySQL/PostgreSQL with ORM (Knex.js).
-* [x] **Redis Rate Limiting**: Integrate Redis for rate limiting and abuse prevention.
-* [x] **Dockerfile**: Create Dockerfile for building and deploying the API.
-* [x] **CORS Middleware**: Handle cross-origin requests with CORS middleware.
-* [ ] **Signature Verification**: Implement full signature verification for requests.
-* [ ] .
-* [ ] **Documentation**: Improve API documentation with examples, usage guides, and best practices.
-
----
-
-## 📂 Project Structure
-
-```bash
-src/
-├── config/
-│   └── app.js                   #   App settings (name, version, ports, etc)
-├── controllers/
-│   └── all.js                   #   Main controller logic for API requests
-├── helpers/
-│   └── response/
-│       ├── generator.js         #   Generates standard API response objects
-│       └── render.js            #   Renders API responses to client
-├── middlewares/
-│   ├── fingerprint.js           #   Middleware for device fingerprinting
-│   ├── logger.js                #   Middleware for request logging
-│   ├── response.js              #   Middleware for formatting API responses
-│   └── signature.js             #   Middleware for verifying request signature
-├── modules/
-│   └── global/
-│       └── rules.js             #   Contains global validation rules
-├── routes/
-│   ├── all.js                   #   Route for example + secure APIs
-│   ├── errors.js                #   Route for error responses
-│   └── general.js               #   Route for general APIs
-├── server.js                    #   App entry point and server setup
-├── tests/
-│   ├── helpers/
-│   │   └── mock/
-│   │       └── data.js          #   Mock data used in tests
-│   ├── middlewares/
-│   │   ├── fingerprint.test.js  #   Test for fingerprint middleware
-│   │   ├── response.test.js     #   Test for response middleware
-│   │   └── signature.test.js    #   Test for signature middleware
-│   └── validators/
-│       └── validator.test.js    #   Test for validators logic
-└── utils/
-    └── validators/
-        ├── field.js             #   Field-level validation logic
-        ├── index.js             #   Validator module entry point
-        └── input.js             #   Input validation functions
-```
-
 ## 🚀 One-click Deployment
 
 Deploy this project to Railway with the button below:
@@ -153,10 +98,13 @@ Deploy this project to Railway with the button below:
 
 ## 📑 Documentation
 
-* [EXAMPLE.md](EXAMPLE.md) — Example usage of routes, controllers, middlewares
-* [REFERENCE.md](REFERENCE.md) — Detailed API reference documentation
-* [CONTRIBUTING.md](CONTRIBUTING.md) — PR, commit, code style guidelines
-* [SECURITY.md](SECURITY.md) — Security policy and reporting process
+* [EXAMPLE.md](EXAMPLE.md) — Example usage of routes, controllers, middlewares  
+* [REFERENCE.md](REFERENCE.md) — Detailed API reference documentation  
+* [CONTRIBUTING.md](CONTRIBUTING.md) — PR, commit, code style guidelines  
+* [SECURITY.md](SECURITY.md) — Security policy and reporting process  
+* [STRUCTURE.md](STRUCTURE.md) — Project folder and file structure overview  
+* [TODO.md](TODO.md) — Planned features and improvements  
+
 
 ## 💬 Community & Support
 
