@@ -75,12 +75,18 @@ app.use((err, req, res, next) => {
 })
 
 /**
- * Start the server
- * - Listens on the specified port from the configuration
- * - Initializes the Cloudflare IP service for rate limiting
+ * Initialize Cloudflare IP Service
+ * - This service is responsible for fetching and caching Cloudflare IPs
+ * - If the service fails to initialize, the application will log the error and exit
+ * - If successful, the server will start listening on the specified port
  */
-app.listen(parseInt(appPort, 10) || 3000, () => {
-  console.log(`[${appName}-${appVersion}] Server started on port ${appPort || 3000}`)
-  console.log(`[${appName}-${appVersion}] Error base URL: ${errorBaseUrl}`)
-  apiRateLimit.initCloudflareIpService()
+apiRateLimit.initCloudflareIpService().then(() => {
+  console.log(`[${appName}-${appVersion}] Cloudflare IP Service Initialized`)
+  app.listen(parseInt(appPort, 10) || 3000, () => {
+    console.log(`[${appName}-${appVersion}] Server Started on Port ${appPort || 3000}`)
+    console.log(`[${appName}-${appVersion}] Error Base URL: ${errorBaseUrl}`)
+  })
+}).catch((err) => {
+  console.error(`[${appName}-${appVersion}] Error Initializing Cloudflare IP Service:`, err.stack)
+  process.exit(1)
 })

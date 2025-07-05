@@ -37,9 +37,9 @@ async function updateCloudflareIps() {
  * - Calls `updateCloudflareIps` to fetch the latest IPs.
  * - Sets an interval to update the IPs every hour.
  */
-function initCloudflareIpService() {
-  updateCloudflareIps()
-  setInterval(updateCloudflareIps, 3600000)
+async function initCloudflareIpService() {
+  await updateCloudflareIps()
+  setInterval(updateCloudflareIps, rateLimitConfig.updateInterval)
 }
 
 /**

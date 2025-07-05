@@ -7,4 +7,5 @@ require('dotenv').config({ debug: process.env.APP_DEBUG === 'true' })
 module.exports = {
   maxRequests: parseInt(process.env.RATE_LIMIT_MAX, 10) || 100,
   windowSeconds: parseInt(process.env.RATE_LIMIT_WINDOW, 10) || 60,
+  updateInterval: parseInt(process.env.RATE_LIMIT_UPDATE_INTERVAL, 10) || 3600000
 }
