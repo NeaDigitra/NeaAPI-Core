@@ -9,6 +9,7 @@ const redis = require('redis')
 function createRedisClient() {
   const client = redis.createClient({
     url: process.env.REDIS_URL || 'redis://localhost:6379',
+    username: process.env.REDIS_USERNAME || undefined,
     password: process.env.REDIS_PASSWORD || undefined
   })
   if (process.env.NODE_ENV !== 'test') {
