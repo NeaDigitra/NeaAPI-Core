@@ -25,17 +25,23 @@ describe('Middleware: fingerprint', () => {
   })
 
   it('generates correct fingerprint hash from headers (uses received headers)', async () => {
-    const headers = {
-      'user-agent': 'Mozilla/5.0',
-      'accept': 'text/html',
-      'accept-language': 'en-US',
-      'sec-ch-ua': '"Chromium";v="108", "Not A;Brand";v="99"',
+    try {
+      const headers = {
+        'user-agent': 'Mozilla/5.0',
+        'accept': 'text/html',
+        'accept-language': 'en-US',
+        'sec-ch-ua': '"Chromium";v="108", "Not A;Brand";v="99"',
+      }
+      const res = await supertest(app).get('/').set(headers)
+      console.log('==== CI DEBUG res.body ====', res.body)
+      const expectedHash = computeFingerprint(res.body.headers || {})
+      expect(res.status).toBe(200)
+      expect(res.body.fingerprint).toBe(expectedHash)
+      expect(res.body.fingerprint.length).toBe(64)
+    } catch (e) {
+      console.error('CI test error:', e)
+      throw e
     }
-    const res = await supertest(app).get('/').set(headers)
-    const expectedHash = computeFingerprint(res.body.headers)
-    expect(res.status).toBe(200)
-    expect(res.body.fingerprint).toBe(expectedHash)
-    expect(res.body.fingerprint.length).toBe(64)
   })
 
   it('generates fingerprint with empty strings when headers missing', async () => {
