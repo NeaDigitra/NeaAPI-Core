@@ -24,6 +24,7 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }))
  * - The 'response' middleware formats API responses in a standardized way
  * - The 'fingerprint' middleware generates a unique fingerprint for each request based on the client's headers
  * - The 'signature' middleware validates the signature of incoming requests to ensure authenticity
+ * - THE 'cors' middleware handles Cross-Origin Resource Sharing (CORS) to allow requests from different origins
  * - The 'errors' route handles error-related requests
  */
 const apiLogger = require('middlewares/logger')(appName)
@@ -31,9 +32,11 @@ const apiResponse = require('middlewares/response')
 const apiFingerprint = require('middlewares/fingerprint')
 const apiSignature = require('middlewares/signature')
 const apiRateLimit = require('middlewares/ratelimit')
+const apiCors = require('middlewares/cors')
 app.use(apiFingerprint)
 app.use(apiResponse)
 app.use(apiLogger)
+app.use(apiCors)
 
 /**
  * API Routes
