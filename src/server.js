@@ -30,6 +30,7 @@ const apiLogger = require('middlewares/logger')(appName)
 const apiResponse = require('middlewares/response')
 const apiFingerprint = require('middlewares/fingerprint')
 const apiSignature = require('middlewares/signature')
+const apiRateLimit = require('middlewares/ratelimit')
 app.use(apiFingerprint)
 app.use(apiResponse)
 app.use(apiLogger)
@@ -43,8 +44,8 @@ app.use(apiLogger)
  * - The 'errors' route handles error-related requests
  */
 app.use('/api/example', require('routes/all'))
-app.use('/api/general', require('routes/general'))
-app.use('/api/secure', apiSignature, require('routes/all'))
+app.use('/api/general', apiRateLimit.setup, require('routes/general'))
+app.use('/api/secure', apiRateLimit.setup, apiSignature, require('routes/all'))
 app.use('/errors', require('routes/errors'))
 
 /**
@@ -76,8 +77,10 @@ app.use((err, req, res, next) => {
 /**
  * Start the server
  * - Listens on the specified port from the configuration
+ * - Initializes the Cloudflare IP service for rate limiting
  */
 app.listen(parseInt(appPort, 10) || 3000, () => {
   console.log(`[${appName}-${appVersion}] Server started on port ${appPort || 3000}`)
   console.log(`[${appName}-${appVersion}] Error base URL: ${errorBaseUrl}`)
+  apiRateLimit.initCloudflareIpService()
 })
