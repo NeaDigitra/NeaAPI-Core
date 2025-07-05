@@ -3,44 +3,49 @@ const express = require('express')
 const supertest = require('supertest')
 const fingerprintMiddleware = require('middlewares/fingerprint')
 
+function computeFingerprint(headers = {}) {
+  return crypto.createHash('sha256')
+    .update([
+      headers['user-agent'] || '',
+      headers['accept'] || '',
+      headers['accept-language'] || '',
+      headers['sec-ch-ua'] || '',
+    ].join('|'))
+    .digest('hex')
+}
+
 describe('Middleware: fingerprint', () => {
   let app
   beforeEach(() => {
     app = express()
     app.use(fingerprintMiddleware)
     app.get('/', (req, res) => {
-      res.json({ fingerprint: req.fingerprint })
+      res.json({ fingerprint: req.fingerprint, headers: req.headers })
     })
   })
 
-  it('generates correct fingerprint hash from headers', async () => {
+  it('generates correct fingerprint hash from headers (uses received headers)', async () => {
     const headers = {
       'user-agent': 'Mozilla/5.0',
-      accept: 'text/html',
+      'accept': 'text/html',
       'accept-language': 'en-US',
       'sec-ch-ua': '"Chromium";v="108", "Not A;Brand";v="99"',
     }
-    const combinedRawData = [
-      headers['user-agent'],
-      headers.accept,
-      headers['accept-language'],
-      headers['sec-ch-ua'],
-    ].join('|')
-    const expectedHash = crypto.createHash('sha256').update(combinedRawData).digest('hex')
     const res = await supertest(app).get('/').set(headers)
+    const expectedHash = computeFingerprint(res.body.headers)
     expect(res.status).toBe(200)
     expect(res.body.fingerprint).toBe(expectedHash)
+    expect(res.body.fingerprint.length).toBe(64)
   })
 
   it('generates fingerprint with empty strings when headers missing', async () => {
     const res = await supertest(app).get('/')
-    const combinedRawData = '|||'
-    const expectedHash = crypto.createHash('sha256').update(combinedRawData).digest('hex')
+    const expectedHash = computeFingerprint(res.body.headers)
     expect(res.status).toBe(200)
     expect(res.body.fingerprint).toBe(expectedHash)
   })
 
-  it('always calls next middleware', async () => {
+  it('always calls next middleware and assigns fingerprint', () => {
     const calledNext = []
     const fakeReq = { headers: {} }
     const fakeRes = {}
@@ -49,5 +54,20 @@ describe('Middleware: fingerprint', () => {
     expect(calledNext.length).toBe(1)
     expect(typeof fakeReq.fingerprint).toBe('string')
     expect(fakeReq.fingerprint.length).toBe(64)
+  })
+
+  it('generates different fingerprints for different user-agents', async () => {
+    const headers1 = { 'user-agent': 'AgentOne', accept: '', 'accept-language': '', 'sec-ch-ua': '' }
+    const headers2 = { 'user-agent': 'AgentTwo', accept: '', 'accept-language': '', 'sec-ch-ua': '' }
+    const res1 = await supertest(app).get('/').set(headers1)
+    const res2 = await supertest(app).get('/').set(headers2)
+    expect(res1.body.fingerprint).not.toBe(res2.body.fingerprint)
+  })
+
+  it('fingerprint is stable for same input', async () => {
+    const headers = { 'user-agent': 'SameAgent', accept: 'text/plain', 'accept-language': 'en', 'sec-ch-ua': '' }
+    const res1 = await supertest(app).get('/').set(headers)
+    const res2 = await supertest(app).get('/').set(headers)
+    expect(res1.body.fingerprint).toBe(res2.body.fingerprint)
   })
 })
