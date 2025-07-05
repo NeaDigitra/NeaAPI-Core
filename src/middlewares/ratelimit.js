@@ -1,6 +1,8 @@
 const axios = require('axios')
-const redisClient = require('services/redis')
+const createRedisClient = require('services/redis')
 const rateLimitConfig = require('config/ratelimit')
+const redisClient = createRedisClient()
+redisClient.connect()
 
 /**
  * Default Cloudflare IPs.

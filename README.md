@@ -56,11 +56,12 @@ This project provides a robust and well-structured API boilerplate built with Ex
 
 * [ ] **API Docs Generator**: Auto-generate OpenAPI/Swagger docs from routes & validators.
 * [ ] **Database Integration**: Set up MySQL/PostgreSQL with ORM (Knex.js).
-* [ ] **Redis Rate Limiting**: Integrate Redis for rate limiting and abuse prevention.
+* [x] **Redis Rate Limiting**: Integrate Redis for rate limiting and abuse prevention.
 * [x] **Dockerfile**: Create Dockerfile for building and deploying the API.
-* [ ] **CORS Middleware**: Handle cross-origin requests with CORS middleware.
+* [x] **CORS Middleware**: Handle cross-origin requests with CORS middleware.
 * [ ] **Signature Verification**: Implement full signature verification for requests.
-* [ ] ...
+* [ ] .
+* [ ] **Documentation**: Improve API documentation with examples, usage guides, and best practices.
 
 ---
 

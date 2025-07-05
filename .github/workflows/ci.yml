@@ -7,36 +7,48 @@ on:
     types: [opened, edited, synchronize, reopened]
 
 jobs:
-
   check-commit-message:
     name: Commit Message Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Fetch main for commit lint
+      - name: Fetch Main for Commit Lint
         run: git fetch origin main
 
-      - name: Lint commit messages
+      - name: Lint Commit Messages
         run: |
-          COMMITS=$(git log origin/main..HEAD --pretty=format:"%s")
+          # Collect all non-merge commits between origin/main and HEAD
+          COMMITS=$(git log origin/main..HEAD --no-merges --pretty=format:"%s")
+
           if [ -z "$COMMITS" ]; then
             echo "No new commit messages to check. Skipping commit lint."
             exit 0
           fi
-          echo "::group::Commit messages"
+
+          echo "::group::Commit messages to lint"
           echo "$COMMITS"
           echo "::endgroup::"
-          ALLOWED="^(feat|fix|docs|refactor|chore|test|build|ci|revert|merge)\\([a-z0-9-]+\\): .+ :[a-z0-9_]+:$"
+
+          # Allowed Conventional Commit types and format:
+          # type(scope): subject :emoji:
+          ALLOWED="^(feat|fix|docs|refactor|chore|merge|test|build|ci|revert)\([a-z0-9-]+\): .+ :[a-z0-9_]+:$"
+
           FAIL=0
           while read -r line; do
+            # Skip merge commits
+            if [[ "$line" =~ ^Merge ]]; then
+              continue
+            fi
             if ! [[ "$line" =~ $ALLOWED ]]; then
               echo "::error::Invalid commit message format: \"$line\""
-              echo "::error::Commit messages must match the pattern: <type>(<scope>): <subject> :<emoji>:"
+              echo "::error::Commit messages must match the pattern: <type>(<scope>): <subject> :emoji:"
               echo "::error::Example: feat(api): add payment endpoint :sparkles:"
               FAIL=1
             fi
           done <<< "$COMMITS"
+
           exit $FAIL
 
   build-and-test:
@@ -46,7 +58,7 @@ jobs:
       matrix:
         node-version: [22.x]
     steps:
-      - name: Checkout source code
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
@@ -54,13 +66,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Run tests with coverage
+      - name: Run Tests with Coverage
         run: npm run test -- --coverage
 
-      - name: Upload coverage to Coveralls
+      - name: Upload Coverage to Coveralls
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
