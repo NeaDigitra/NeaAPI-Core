@@ -9,8 +9,8 @@ const redis = require('redis')
 function createRedisClient() {
   const client = redis.createClient({
     url: process.env.REDIS_URL || 'redis://localhost:6379',
-    username: process.env.REDIS_USERNAME || undefined,
-    password: process.env.REDIS_PASSWORD || undefined
+    username: process.env.REDIS_USERNAME,
+    password: process.env.REDIS_PASSWORD
   })
   if (process.env.NODE_ENV !== 'test') {
     client.on('error', (err) => console.error(`[${appName}-Redis] Client Error:`, err.stack))
