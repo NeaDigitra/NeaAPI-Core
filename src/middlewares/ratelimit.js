@@ -139,5 +139,6 @@ module.exports = {
     }
     return next()
   },
-  initCloudflareIpService
+  updateCloudflareIps, initCloudflareIpService,
+  ipToLong, checkIpv4InCidr, convertIpv6ToBigint, checkIpv6InCidr, checkIpInCidrList
 }
