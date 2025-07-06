@@ -81,4 +81,4 @@ Contributions are welcome — feel free to open issues or submit pull requests! 
 
 ---
 
-*Last updated: `$(date +"%Y-%m-%d")`*
+*Last updated: `2025-07-06`*
