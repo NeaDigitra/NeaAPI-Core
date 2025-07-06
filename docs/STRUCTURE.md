@@ -8,18 +8,10 @@ The project is organized to facilitate development, testing, and deployment of t
 
 ```bash
 .                        
-├── CONTRIBUTING.md              # Contribution guidelines: PR flow, code style, branch naming
 ├── docker-compose.yml           # Docker Compose for local dev (API, MySQL, Redis)
 ├── Dockerfile                   # Docker image build instructions for production
-├── EXAMPLE.md                   # Sample API calls and cURL examples
-├── INSTALLATION.md              # Setup, configuration, deployment instructions
 ├── package-lock.json            # Locked versions of npm dependencies
 ├── package.json                 # Project metadata, scripts, dependencies
-├── README.md                    # High-level project overview and badges
-├── REFERENCE.md                 # Detailed API endpoint reference and schemas
-├── SECURITY.md                  # Security policy, vulnerability reporting, audit process
-├── STRUCTURE.md                 # (This file) Detailed file-level documentation
-├── TODO.md                      # Backlog of planned features and improvements
 └── src                          # Source code directory
     ├── config            
     │   ├── app.js               # Load env vars, global app settings

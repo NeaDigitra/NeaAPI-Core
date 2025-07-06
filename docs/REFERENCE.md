@@ -73,7 +73,3 @@ All error messages are RFC7807 compliant.
 * Use `.custom(fn)` for complex logic (returns true or error message).
 * Enum, pattern, and range are fast & safe.
 * Error array helps frontend map validation errors instantly.
-
----
-
-See main [README.md](./README.md) for full project flow and more examples.

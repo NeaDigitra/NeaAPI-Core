@@ -172,16 +172,3 @@ This will mount your source code and automatically restart the server on changes
 * **❌ Redis errors**: Confirm Redis is running on the specified host and port.
 * **❌ MySQL connection issues**: Verify the credentials in `.env` and ensure the MySQL service is running.
 * **❌ CORS errors**: Check your CORS configuration in the `.env` file, especially the `CORS_ORIGIN` setting.
-
----
-
-## 📚 **Additional Documentation**
-
-* [TODO.md - Future Enhancements](TODO.md) - Planned features and improvements
-* [README.md - Project Overview](README.md) - General project information and overview 
-* [EXAMPLE.md - Example Usage](EXAMPLE.md) - Example API usage and endpoints
-* [REFERENCE.md - API Reference](REFERENCE.md) - Detailed API reference documentation
-* [CONTRIBUTING.md - Contributing Guidelines](CONTRIBUTING.md) - How to contribute to the project
-* [SECURITY.md - Security Policy](SECURITY.md) - Security practices and reporting vulnerabilities
-* [STRUCTURE.md - Project Structure](STRUCTURE.md) - Overview of the project structure and organization
-* [LICENSE.md - License Information](LICENSE.md) - Project license details
