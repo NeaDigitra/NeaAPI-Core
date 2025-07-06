@@ -1,5 +1,3 @@
-const { errorBaseUrl } = require('config/app')
-
 /**
  * Generate RFC7807 Error Response
  * * This function generates an error response for the API.
@@ -7,7 +5,7 @@ const { errorBaseUrl } = require('config/app')
  */
 module.exports = function generateError(request, identifier, errors) {
   const requestUrl = request.originalUrl || request.url
-  const requestType = `${errorBaseUrl}/${identifier}`
+  const requestType = `${global.app.errorBaseUrl}/${identifier}`
   const errorMap = {
     unknown_error: {
       status: 400,
