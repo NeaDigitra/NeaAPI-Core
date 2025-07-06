@@ -3,6 +3,7 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/NeaDigitra/NeaAPI-Core/ci.yml?branch=main)](https://github.com/NeaDigitra/NeaAPI-Core/actions)
 [![Node Version](https://img.shields.io/badge/node-22.16.0%2B-blue)](https://nodejs.org/en)
 [![Coverage Status](https://coveralls.io/repos/github/NeaDigitra/NeaAPI-Core/badge.svg?branch=main)](https://coveralls.io/github/NeaDigitra/NeaAPI-Core?branch=main)
+[![Security: Snyk](https://snyk.io/test/github/NeaDigitra/NeaAPI-Core/badge.svg)](https://snyk.io/test/github/NeaDigitra/NeaAPI-Core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A robust and well-structured API boilerplate built with Express.js. Focuses on clean architecture, secure practices, and efficient development. Includes essential middlewares, strong input validation, and comprehensive error handling. Ideal for building scalable and maintainable APIs with a focus on security and performance.
@@ -62,4 +63,4 @@ See [INSTALLATION.md](INSTALLATION.md) for setup, configuration, and deployment 
 
 ## 📄 License
 
-MIT — [LICENSE](LICENSE)
+MIT — [LICENSE](LICENSE.md)
