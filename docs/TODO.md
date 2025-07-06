@@ -1,6 +1,8 @@
 # 📝 Project Roadmap & TODOs
 
-This document outlines the upcoming features, recent milestones, and ongoing improvements for **NeaAPI-Core**. Contributions are welcome — feel free to open issues or submit pull requests! 🚀
+This document outlines the upcoming features, recent milestones, and ongoing improvements for **NeaAPI-Core**.
+
+Contributions are welcome — feel free to open issues or submit pull requests! 🚀
 
 ---
 
