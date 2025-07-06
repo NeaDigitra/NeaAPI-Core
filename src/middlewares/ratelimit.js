@@ -150,6 +150,7 @@ module.exports = {
     }
     return next()
   },
+  getRedisClient,
   updateCloudflareIps, initCloudflareIpService,
   ipToLong, checkIpv4InCidr, convertIpv6ToBigint, checkIpv6InCidr, checkIpInCidrList
 }

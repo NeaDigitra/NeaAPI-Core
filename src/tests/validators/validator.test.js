@@ -229,14 +229,34 @@ describe('field builder', () => {
     expect(f.lengthRules).toEqual({ min: null, max: null })
   })
 
+  it('should ignore invalid length rules with undefined values', () => {
+    const f = field('len').length({ min: undefined, max: 'invalid' })
+    expect(f.lengthRules).toEqual({ min: null, max: null })
+  })
+
   it('should set range rules correctly', () => {
     const f = field('range').range({ min: 5, max: 20 })
     expect(f.rangeRules).toEqual({ min: 5, max: 20 })
   })
 
   it('should ignore invalid range rules', () => {
-    const f = field('range').range({ min: 'x', max: 'y' })
+    const f = field('num').range({ min: 'string', max: null })
     expect(f.rangeRules).toEqual({ min: null, max: null })
+  })
+
+  it('should ignore invalid range rules with mixed types', () => {
+    const f = field('num').range({ min: true, max: 'invalid' })
+    expect(f.rangeRules).toEqual({ min: null, max: null })
+  })
+
+  it('should handle range rules with only valid numbers', () => {
+    const f = field('num').range({ min: 10, max: 'not_a_number' })
+    expect(f.rangeRules).toEqual({ min: 10, max: null })
+  })
+
+  it('should handle length rules with only valid numbers', () => {
+    const f = field('str').length({ min: 5, max: 'not_a_number' })
+    expect(f.lengthRules).toEqual({ min: 5, max: null })
   })
 
   it('should set enum values when array', () => {

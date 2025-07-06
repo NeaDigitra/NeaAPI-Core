@@ -42,8 +42,6 @@ function corsMiddleware(req, res, next) {
     allowOriginValue = config.credentials && origin ? origin : '*'
   } else if (origin && config.allowedOriginList.includes(origin)) {
     allowOriginValue = origin
-  } else if (!(origin) && config.allowAllOrigins) {
-    allowOriginValue = '*'
   } else {
     return res.api('forbidden')
   }

@@ -341,4 +341,27 @@ describe('Cors Middleware', function () {
         expect(res.body).toHaveProperty('type')
       })
   })
+
+  test('Should Not Set Credentials Header When Credentials True But No Origin', async () => {
+    process.env.CORS_CREDENTIALS = 'true'
+    process.env.CORS_ORIGIN = '*'
+    const app = createTestApplication()
+    const res = await supertest(app)
+      .get('/test')
+
+    expect(res.headers['access-control-allow-credentials']).toBeUndefined()
+    expect(res.status).toBe(200)
+  })
+
+  test('Should Not Set Credentials Header When Credentials False With Origin', async () => {
+    process.env.CORS_CREDENTIALS = 'false'
+    process.env.CORS_ORIGIN = 'https://allowed.com'
+    const app = createTestApplication()
+    const res = await supertest(app)
+      .get('/test')
+      .set('Origin', 'https://allowed.com')
+
+    expect(res.headers['access-control-allow-credentials']).toBeUndefined()
+    expect(res.status).toBe(200)
+  })
 })
