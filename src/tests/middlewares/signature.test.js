@@ -126,6 +126,29 @@ describe('Middleware: validateSignature', () => {
       .send(body)
     expect(res.status).toBe(200)
   })
+
+  it('handles null values correctly in signature generation', async () => {
+    const body = { nullValue: null, name: 'Test' }
+    const sign = getSign(body)
+    const res = await supertest(app)
+      .post('/test')
+      .set('x-secret', secret)
+      .set('x-signature', sign)
+      .send(body)
+    expect(res.status).toBe(200)
+  })
+
+  it('handles undefined values correctly in signature generation', async () => {
+    const body = { name: 'Test' }
+    // Don't include undefined values in the body when sending
+    const sign = getSign(body)
+    const res = await supertest(app)
+      .post('/test')
+      .set('x-secret', secret)
+      .set('x-signature', sign)
+      .send(body)
+    expect(res.status).toBe(200)
+  })
 })
 
 describe('Middleware: validateSignature - Helpers Coverage', () => {

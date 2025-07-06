@@ -92,4 +92,21 @@ describe('ratelimit.js utility functions', () => {
     expect(checkIpInCidrList('2001:db8::1', ['2001:db8::/32'])).toBe(true)
     expect(checkIpInCidrList('2001:db9::1', ['2001:db8::/32'])).toBe(false)
   })
+
+  test('convertIpv6ToBigint should handle empty segments in IPv6 address', () => {
+    expect(convertIpv6ToBigint('2001:db8::1')).toBeDefined()
+    expect(convertIpv6ToBigint('::')).toBeDefined()
+    expect(convertIpv6ToBigint('::1')).toBeDefined()
+    expect(convertIpv6ToBigint('2001::')).toBeDefined()
+  })
+
+  test('convertIpv6ToBigint should handle empty string segments specifically', () => {
+    const result = convertIpv6ToBigint('::')
+    expect(result).toBeDefined()
+    expect(typeof result).toBe('bigint')
+
+    const result2 = convertIpv6ToBigint('2001:db8::0001')
+    expect(result2).toBeDefined()
+    expect(typeof result2).toBe('bigint')
+  })
 })

@@ -1,8 +1,19 @@
 const axios = require('axios')
-const redisClient = global.redis()
 
 /**
- * Default Cloudflare IPs.
+ * Get Redis Client
+ * - This function retrieves the Redis client based on the current environment.
+ * - Returns the appropriate Redis client based on environment
+ */
+function getRedisClient() {
+  if (process.env.NODE_ENV === 'test' && global.redis) {
+    return global.redis()
+  }
+  return global.redis()
+}
+
+/**
+ * Default Cloudflare IPs
  * - These IPs are used to identify and allow traffic from Cloudflare's network.
  */
 const defaultCloudflareIps = [
@@ -118,6 +129,7 @@ function checkIpInCidrList(ipAddress, cidrList) {
  */
 module.exports = {
   setup: async function rateLimitMiddleware(request, response, next) {
+    const redisClient = getRedisClient()
     const localIps = ['::1', '127.0.0.1', '::ffff:127.0.0.1']
     const remoteIp = (request.connection.remoteAddress || request.socket.remoteAddress).replace(/^::ffff:/, '')
     const clientIp = (request.headers['cf-connecting-ip'] || request.ip).split(',')[0].trim()
@@ -138,6 +150,7 @@ module.exports = {
     }
     return next()
   },
+  getRedisClient,
   updateCloudflareIps, initCloudflareIpService,
   ipToLong, checkIpv4InCidr, convertIpv6ToBigint, checkIpv6InCidr, checkIpInCidrList
 }

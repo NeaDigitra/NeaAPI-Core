@@ -1,5 +1,7 @@
 const mockOn = jest.fn().mockReturnThis()
-const mockConnect = jest.fn().mockReturnThis()
+const mockConnect = jest.fn(() => ({
+  catch: jest.fn()
+}))
 const mockQuit = jest.fn().mockReturnThis()
 const mockCreateClient = jest.fn(() => ({
   on: mockOn,
@@ -37,6 +39,7 @@ describe('Redis Client', () => {
     createRedisClient()
     expect(mockCreateClient).toHaveBeenCalledWith({
       url: 'redis://test:6379',
+      username: undefined,
       password: 'testpass',
     })
   })
@@ -49,6 +52,7 @@ describe('Redis Client', () => {
     createRedisClient()
     expect(mockCreateClient).toHaveBeenCalledWith({
       url: 'redis://localhost:6379',
+      username: undefined,
       password: undefined,
     })
   })
@@ -70,5 +74,93 @@ describe('Redis Client', () => {
     await redisClient.connect()
     await redisClient.quit()
     expect(mockQuit).toHaveBeenCalled()
+  })
+
+  it('should return singleton instance on multiple calls', () => {
+    const createRedisClient = require('services/redis')
+    const client1 = createRedisClient()
+    const client2 = createRedisClient()
+    expect(client1).toBe(client2)
+    expect(mockCreateClient).toHaveBeenCalledTimes(1)
+  })
+
+  it('should handle error events in production environment', () => {
+    process.env.NODE_ENV = 'production'
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
+    global.app = { appName: 'TestApp' }
+
+    jest.resetModules()
+    const createRedisClient = require('services/redis')
+    const client = createRedisClient()
+
+    const errorHandler = mockOn.mock.calls.find(call => call[0] === 'error')[1]
+    const mockError = new Error('Connection failed')
+    mockError.stack = 'Error: Connection failed\n    at test'
+    errorHandler(mockError)
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith('[TestApp-Redis] Client Error:', 'Error: Connection failed\n    at test')
+    consoleErrorSpy.mockRestore()
+  })
+
+  it('should handle ready events in production environment', () => {
+    process.env.NODE_ENV = 'production'
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation()
+    global.app = { appName: 'TestApp' }
+
+    jest.resetModules()
+    const createRedisClient = require('services/redis')
+    const client = createRedisClient()
+
+    const readyHandler = mockOn.mock.calls.find(call => call[0] === 'ready')[1]
+    readyHandler()
+
+    expect(consoleLogSpy).toHaveBeenCalledWith('[TestApp-Redis] Client Connected Successfully')
+    consoleLogSpy.mockRestore()
+  })
+
+  it('should handle end events in production environment', () => {
+    process.env.NODE_ENV = 'production'
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation()
+    global.app = { appName: 'TestApp' }
+
+    jest.resetModules()
+    const createRedisClient = require('services/redis')
+    const client = createRedisClient()
+
+    const endHandler = mockOn.mock.calls.find(call => call[0] === 'end')[1]
+    endHandler()
+
+    expect(consoleLogSpy).toHaveBeenCalledWith('[TestApp-Redis] Client Disconnected')
+    consoleLogSpy.mockRestore()
+  })
+
+  it('should handle connection errors in production environment', () => {
+    process.env.NODE_ENV = 'production'
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
+    global.app = { appName: 'TestApp' }
+
+    const mockCatch = jest.fn((callback) => {
+      callback(new Error('Connection timeout'))
+    })
+    mockConnect.mockReturnValue({ catch: mockCatch })
+
+    jest.resetModules()
+    const createRedisClient = require('services/redis')
+    const client = createRedisClient()
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith('[TestApp-Redis] Connection Error:', 'Connection timeout')
+    consoleErrorSpy.mockRestore()
+  })
+
+  it('should include REDIS_USERNAME when provided', () => {
+    process.env.REDIS_USERNAME = 'testuser'
+    jest.resetModules()
+    const createRedisClient = require('services/redis')
+    createRedisClient()
+    expect(mockCreateClient).toHaveBeenCalledWith({
+      url: 'redis://test:6379',
+      username: 'testuser',
+      password: 'testpass',
+    })
   })
 })
