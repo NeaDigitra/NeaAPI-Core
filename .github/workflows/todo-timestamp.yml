@@ -25,6 +25,7 @@ jobs:
 
       - name: Commit & push if changed
         run: |
+          DATETIME=$(date +"%Y-%m-%d %H:%M:%S")
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           if ! git diff --quiet docs/TODO.md; then
