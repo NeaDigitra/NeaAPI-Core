@@ -1,4 +1,4 @@
-# ✨ Contributing to NeaAPI-Core
+# ✨ Contributing Guidelines
 
 Thank you for your interest in improving **NeaAPI-Core**! 🚀
 
