@@ -1,30 +1,28 @@
-name: Auto Update TODO Last-Updated Date
-
+name: TODO Last-Updated
 on:
-  schedule:
-    - cron: '0 0 * * *'
   push:
-    branches: [ main ]
-
+    paths:
+      - 'docs/TODO.md'
 jobs:
-  update-todo:
+  update-todo-date:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Update TODO Last-Updated Date
+      - name: Update last-updated date
         run: |
           DATE=$(date +'%Y-%m-%d')
-          sed -i "s/^* Last updated:.*/* Last updated: \`${DATE}\`/" docs/TODO.md
+          sed -i "s/^\\*Last updated:.*$/\*Last updated: \`${DATE}\`*/" docs/TODO.md
 
-      - name: Commit & Push If Changed
+      - name: Commit & push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           if ! git diff --quiet docs/TODO.md; then
             git add docs/TODO.md
-            git commit -m "chore: auto-update TODO last-updated to ${DATE}"
+            git commit -m "chore(todo): auto-update TODO last-updated to ${DATE} 📅"
             git push
           else
-            echo "No changes to TODO.md; skipping commit."
+            echo "No changes in docs/TODO.md — skipping commit."
           fi
