@@ -14,10 +14,6 @@ Contributions are welcome — feel free to open issues or submit pull requests! 
 * [ ] 🔧 **Global Logging Service**
   * Centralize request and error logs into Elasticsearch or a similar backend for real-time monitoring and analysis.
 
-* [ ] ⚙️ **Health, Readiness & Liveness Probes**
-  * ❤️ `/health/live` (process is running)
-  * ✅ `/health/ready` (DB, Redis, external deps are reachable)
-  * 🚀 `/health/startup` (app fully initialized)
 * [ ] 📈 **Observability & Monitoring**
   * **Metrics endpoint** (`/metrics`): expose Prometheus-style counters for request rates, error rates, and latency histograms.
   * **Structured logging**: use pino or Winston with JSON output, include request IDs, and ship logs to Elasticsearch/Splunk.
@@ -56,6 +52,11 @@ Contributions are welcome — feel free to open issues or submit pull requests! 
 
 * [x] 🛠️ **Test Coverage**
   * Comprehensive Jest and Supertest suites covering middleware, helpers, and services.
+
+* [x] ⚙️ **Health, Readiness & Liveness Probes**
+  * ❤️ `/health/live` (process is running)
+  * ✅ `/health/ready` (DB, Redis, external deps are reachable)
+  * 🚀 `/health/startup` (app fully initialized)
 
 ---
 
