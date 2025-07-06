@@ -18,10 +18,10 @@ function createRedisClient() {
       redisClient.on('error', (err) => console.error(`[${global.app.appName}-Redis] Client Error:`, err.stack))
       redisClient.on('ready', () => console.log(`[${global.app.appName}-Redis] Client Connected Successfully`))
       redisClient.on('end', () => console.log(`[${global.app.appName}-Redis] Client Disconnected`))
+      redisClient.connect().catch((err) => {
+        console.error(`[${global.app.appName}-Redis] Connection Error:`, err.message)
+      })
     }
-    redisClient.connect().catch((err) => {
-      console.error(`[${global.app.appName}-Redis] Connection Error:`, err.message)
-    })
   }
   return redisClient
 }

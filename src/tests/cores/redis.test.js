@@ -1,5 +1,7 @@
 const mockOn = jest.fn().mockReturnThis()
-const mockConnect = jest.fn().mockReturnThis()
+const mockConnect = jest.fn(() => ({
+  catch: jest.fn()
+}))
 const mockQuit = jest.fn().mockReturnThis()
 const mockCreateClient = jest.fn(() => ({
   on: mockOn,
@@ -37,6 +39,7 @@ describe('Redis Client', () => {
     createRedisClient()
     expect(mockCreateClient).toHaveBeenCalledWith({
       url: 'redis://test:6379',
+      username: undefined,
       password: 'testpass',
     })
   })
@@ -49,6 +52,7 @@ describe('Redis Client', () => {
     createRedisClient()
     expect(mockCreateClient).toHaveBeenCalledWith({
       url: 'redis://localhost:6379',
+      username: undefined,
       password: undefined,
     })
   })

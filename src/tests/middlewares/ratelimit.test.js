@@ -18,7 +18,22 @@ describe('Rate Limit Middleware', () => {
   let app
 
   beforeAll(async () => {
+    // Ensure global.redis is available for the middleware
+    global.redis = jest.fn(() => mockRedis)
+
     app = express()
+
+    // Add response middleware to provide .api() method
+    app.use((req, res, next) => {
+      res.api = jest.fn((errorType) => {
+        if (errorType === 'rate_limit_exceeded') {
+          return res.status(429).json({ error: 'Rate limit exceeded' })
+        }
+        return res.status(500).json({ error: errorType })
+      })
+      next()
+    })
+
     app.use(setup)
     app.get('/test', (req, res) => res.json({ success: true }))
     jest.spyOn(ratelimit, 'initCloudflareIpService').mockResolvedValue()
@@ -60,9 +75,22 @@ describe('Rate Limit Middleware', () => {
   })
 
   it('should block request if over limit', async () => {
-    mockRedis.get.mockResolvedValue('100')
-    const res = await request(app).get('/test').set('cf-connecting-ip', '173.245.48.1')
-    expect(res.statusCode).toBe(500)
+    // Use a known Cloudflare IP to pass the IP check
+    mockRedis.get.mockResolvedValue('100') // Over limit
+
+    const mockReq = {
+      headers: { 'cf-connecting-ip': '173.245.48.1' }, // Known Cloudflare IP
+      connection: { remoteAddress: '173.245.48.1' },
+      socket: { remoteAddress: '173.245.48.1' },
+      ip: '173.245.48.1'
+    }
+    const mockRes = {
+      api: jest.fn()
+    }
+    const next = jest.fn()
+
+    await setup(mockReq, mockRes, next)
+    expect(mockRes.api).toHaveBeenCalledWith('rate_limit_exceeded')
   })
 
   it('should skip rate limit for local IP', async () => {
