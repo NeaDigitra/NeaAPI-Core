@@ -1,5 +1,11 @@
 # 🚀 Installation & Deployment Guide
 
+This document provides a comprehensive guide to installing, configuring, and deploying the NeaCore API.
+
+Follow these steps to get your environment up and running smoothly.
+
+---
+
 ## ✅ Prerequisites
 
 Ensure your development environment meets the following requirements:
@@ -9,11 +15,15 @@ Ensure your development environment meets the following requirements:
 * [x] **MySQL Server** (v9.x or newer)
 * [x] **Redis Server** (v7.x or newer)
 
+---
+
 ## 🎉 One-Click Deployment
 
 Deploy this project to Railway with a single click:
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/neacore-api?referralCode=JBf6Ji)
+
+---
 
 ## ⚙️ App Configuration
 
@@ -97,6 +107,8 @@ A breakdown of each variable and its purpose:
 * **CORS\_CREDENTIALS**: Whether to allow cookies/credentials in cross-origin requests (`true`/`false`).
 * **CORS\_MAX\_AGE**: How long (in seconds) browsers should cache the preflight response.
 
+---
+
 ## 🚦 Getting Started
 
 1. **Clone the repository and install dependencies**:
@@ -128,6 +140,8 @@ A breakdown of each variable and its purpose:
    npm start
    ```
 
+---
+
 ## 🐳 Running with Docker
 
 ### 📦 Production Image
@@ -151,6 +165,8 @@ docker-compose up --build
 
 This will mount your source code and automatically restart the server on changes.
 
+---
+
 ## 🛠️ Troubleshooting
 
 * **❌ Redis errors**: Confirm Redis is running on the specified host and port.
@@ -161,9 +177,11 @@ This will mount your source code and automatically restart the server on changes
 
 ## 📚 **Additional Documentation**
 
-* [EXAMPLE.md - Example Usage](EXAMPLE.md)
-* [REFERENCE.md - API Reference](REFERENCE.md)
-* [CONTRIBUTING.md - Contribution Guidelines](CONTRIBUTING.md)
-* [SECURITY.md - Security Policy](SECURITY.md)
-* [STRUCTURE.md - Project Structure](STRUCTURE.md)
-* [TODO.md - Future Enhancements](TODO.md)
+* [TODO.md - Future Enhancements](TODO.md) - Planned features and improvements
+* [README.md - Project Overview](README.md) - General project information and overview 
+* [EXAMPLE.md - Example Usage](EXAMPLE.md) - Example API usage and endpoints
+* [REFERENCE.md - API Reference](REFERENCE.md) - Detailed API reference documentation
+* [CONTRIBUTING.md - Contributing Guidelines](CONTRIBUTING.md) - How to contribute to the project
+* [SECURITY.md - Security Policy](SECURITY.md) - Security practices and reporting vulnerabilities
+* [STRUCTURE.md - Project Structure](STRUCTURE.md) - Overview of the project structure and organization
+* [LICENSE.md - License Information](LICENSE.md) - Project license details
