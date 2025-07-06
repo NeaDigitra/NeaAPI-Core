@@ -1,8 +1,6 @@
 # 📝 Project Roadmap & TODOs
 
-This document contains upcoming features, recent milestones, and improvement tasks for **NeaAPI-Core**.
-
-Contributions are welcome — feel free to open issues or submit pull requests! 🚀
+This document outlines the upcoming features, recent milestones, and ongoing improvements for **NeaAPI-Core**. Contributions are welcome — feel free to open issues or submit pull requests! 🚀
 
 ---
 
@@ -12,10 +10,22 @@ Contributions are welcome — feel free to open issues or submit pull requests! 
   * Automatically generate OpenAPI/Swagger specs from route definitions and validation schemas for easy client integration.
 
 * [ ] 🔧 **Global Logging Service**
-  * Centralize request and error logs into Elasticsearch or a similar logging backend for real-time monitoring and analysis.
+  * Centralize request and error logs into Elasticsearch or a similar backend for real-time monitoring and analysis.
 
-* [ ] ⚙️ **Health Checks & Metrics**
-  * Implement `/health` and `/metrics` endpoints (Prometheus-compatible) to track uptime, response times, and resource usage.
+* [ ] ⚙️ **Health, Readiness & Liveness Probes**
+  * ❤️ `/health/live` (process is running)
+  * ✅ `/health/ready` (DB, Redis, external deps are reachable)
+  * 🚀 `/health/startup` (app fully initialized)
+* [ ] 📈 **Observability & Monitoring**
+  * **Metrics endpoint** (`/metrics`): expose Prometheus-style counters for request rates, error rates, and latency histograms.
+  * **Structured logging**: use pino or Winston with JSON output, include request IDs, and ship logs to Elasticsearch/Splunk.
+
+* [ ] 🔢 **API Versioning Strategy**
+  * Support versioned routes (`/v1/users`, `/v2/users`) via path, header negotiation, or Accept header.
+
+* [ ] 📚 **Schema-Driven Docs & Mocking**
+  * Generate live Swagger UI or Redoc from JSON Schemas.
+  * Use Prism to mock the API for frontend development.
 
 * [ ] 💾 **Database Migrations UI**
   * Provide a web interface to manage database schema migrations (status, rollback, apply).
@@ -31,7 +41,7 @@ Contributions are welcome — feel free to open issues or submit pull requests! 
   * Added MySQL support via Knex.js, including migrations and seed data.
 
 * [x] 🔐 **Signature Middleware**
-  * HMAC-SHA256 request signature validation with replay attack protection.
+  * Implemented HMAC-SHA256 request signature validation with replay attack protection.
 
 * [x] 🐳 **Containerization**
   * Created Dockerfile and `docker-compose.yml` for local development (API, MySQL, Redis).
@@ -51,17 +61,21 @@ Contributions are welcome — feel free to open issues or submit pull requests! 
 
 * [ ] 📚 **Documentation Enhancements**
   * Add code examples to API Reference for each endpoint.
-  * Improve CONTRIBUTING.md with PR templates and issue templates.
+  * Improve CONTRIBUTING.md with PR and issue templates.
   * Migrate docs into a static site generator (e.g., Docusaurus).
 
-* [ ] ♻️ **Refactor Input Validators**
+* [ ] ♻️ **Input Validator Refactoring**
   * Extract common validation patterns into reusable modules and optimize performance.
 
-* [x] 🔄 **CI/CD Pipeline**
-  * Integrate automated deployments (GitHub Actions) to staging and production environments.
+* [ ] 🧩 **Plugin / Extension System**
+  * Offer hooks for custom middleware (`app.usePlugin('auth', opts)`) without modifying core.
 
-* [ ] 📈 **Performance Benchmarking**
-  * Add load testing scripts (k6 or Artillery) and document performance targets.
+* [ ] 🖋️ **TypeScript Support**
+  * Migrate to TypeScript or ship type definitions for better IDE support and safer code.
+
+* [ ] 🎨 **Developer Experience (DX)**
+  * Provide a CLI (`npx neacore-cli generate endpoint users`) for scaffolding.
+  * Offer a starter template or generator for instant project bootstrapping.
 
 ---
 
