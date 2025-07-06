@@ -1,6 +1,6 @@
 # 🧰 Validator — Usage & Reference
 
-The validator module gives you robust, readable, and chainable field validation for any Express route, with built-in sanitization, type check, pattern, enum, custom, and more.
+The validator module gives you robust, readable, and chainable field validation for any Express route, with built-in sanitization, type check, pattern, enum, custom, and more. Make sure your API inputs are safe and valid with minimal boilerplate.
 
 ---
 
@@ -50,9 +50,14 @@ If validation fails, response is:
 
 ```json
 {
+  // Standard RFC7807 error format with code 422
+  ...
   "errors": [
     { "field": "username", "message": "Field Is Required" },
-    { "field": "email", "message": "Invalid Email" }
+    { "field": "email", "message": "Invalid Email" },
+    ...
+    ...
+    // Other validation errors
   ]
 }
 ```
