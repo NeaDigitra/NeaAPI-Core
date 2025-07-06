@@ -1,8 +1,5 @@
 const axios = require('axios')
-const createRedisClient = require('services/redis')
-const rateLimitConfig = require('config/ratelimit')
-const redisClient = createRedisClient()
-redisClient.connect()
+const redisClient = global.redis()
 
 /**
  * Default Cloudflare IPs.
@@ -46,7 +43,7 @@ async function updateCloudflareIps() {
  */
 async function initCloudflareIpService() {
   await updateCloudflareIps()
-  setInterval(updateCloudflareIps, rateLimitConfig.updateInterval)
+  setInterval(updateCloudflareIps, global.rateLimit.updateInterval)
 }
 
 /**
@@ -127,8 +124,8 @@ module.exports = {
     const clientKey = `rate:${clientIp}`
     const current = await redisClient.get(clientKey)
     if (!(current)) {
-      await redisClient.set(clientKey, 1, { EX: rateLimitConfig.windowSeconds })
-    } else if (parseInt(current) < rateLimitConfig.maxRequests) {
+      await redisClient.set(clientKey, 1, { EX: global.rateLimit.windowSeconds })
+    } else if (parseInt(current) < global.rateLimit.maxRequests) {
       await redisClient.incr(clientKey)
     } else {
       return response.api('rate_limit_exceeded')

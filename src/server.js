@@ -2,11 +2,16 @@ const express = require('express')
 const app = express()
 
 /**
- * Load Configuration
- * - This file contains the application name and version.
+ * Global Configuration
+ * - This section imports global configurations and services required for the application
+ * - It includes database configuration, application settings, rate limiting, and Redis service
  */
-const { appName, appVersion, appPort, errorBaseUrl } = require('config/app')
-const dbClient = require('config/db')
+global = {
+  db: require('config/db'),
+  app: require('config/app'),
+  rateLimit: require('config/ratelimit'),
+  redis: require('services/redis')
+}
 
 /**
  * Middleware Setup
@@ -28,7 +33,7 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }))
  * - THE 'cors' middleware handles Cross-Origin Resource Sharing (CORS) to allow requests from different origins
  * - The 'errors' route handles error-related requests
  */
-const apiLogger = require('middlewares/logger')(appName)
+const apiLogger = require('middlewares/logger')
 const apiResponse = require('middlewares/response')
 const apiFingerprint = require('middlewares/fingerprint')
 const apiSignature = require('middlewares/signature')
@@ -41,26 +46,18 @@ app.use(apiLogger)
 app.use(apiCors)
 
 /**
- * Database Client Middleware
- * - This middleware injects the database client into the request object
- * - It allows routes to access the database client without needing to import it directly
- */
-app.use((req, res, next) => {
-  req.dbClient = dbClient
-  next()
-})
-
-/**
  * API Routes
  * - Handles all API requests
  * - The 'example' route handles example-related requests
  * - The 'general' route handles general requests
  * - The 'secure' route handles secure requests with API signature validation
+ * - The 'health' route checks the health of the application
  * - The 'errors' route handles error-related requests
  */
 app.use('/api/example', require('routes/all'))
 app.use('/api/general', apiRateLimit.setup, require('routes/general'))
 app.use('/api/secure', apiRateLimit.setup, apiSession, apiSignature, require('routes/all'))
+app.use('/health', require('routes/health'))
 app.use('/errors', require('routes/errors'))
 
 /**
@@ -78,7 +75,7 @@ app.use((req, res, next) => {
  * - Logs the error to the console
  */
 app.use((err, req, res, next) => {
-  console.error(`[${appName}-${appVersion}] Error:`, err.message, err.stack)
+  console.error(`[${global.app.appName}-${global.app.appVersion}] Error:`, err.message, err.stack)
   if (err.type === 'entity.too.large') {
     return res.api('payload_too_large')
   } else if (err.type === 'entity.parse.failed') {
@@ -96,12 +93,20 @@ app.use((err, req, res, next) => {
  * - If successful, the server will start listening on the specified port
  */
 apiRateLimit.initCloudflareIpService().then(() => {
-  console.log(`[${appName}-${appVersion}] Cloudflare IP Service Initialized`)
-  app.listen(parseInt(appPort, 10) || 3000, () => {
-    console.log(`[${appName}-${appVersion}] Server Started on Port ${appPort || 3000}`)
-    console.log(`[${appName}-${appVersion}] Error Base URL: ${errorBaseUrl}`)
+  console.log(`[${global.app.appName}-${global.app.appVersion}] Cloudflare IP Service Initialized`)
+  const port = parseInt(global.app.appPort, 10) || 3000
+  const host = '0.0.0.0'
+  app.listen(port, host, () => {
+    console.log(`[${global.app.appName}-${global.app.appVersion}] Server Started on ${host}:${port}`)
+    console.log(`[${global.app.appName}-${global.app.appVersion}] Error Base URL: ${global.app.errorBaseUrl}`)
+  }).on('error', (err) => {
+    console.error(`[${global.app.appName}-${global.app.appVersion}] Server Error:`, err.message)
+    if (err.code === 'EADDRINUSE') {
+      console.error(`[${global.app.appName}-${global.app.appVersion}] Port ${port} Is Already In Use`)
+    }
+    process.exit(1)
   })
 }).catch((err) => {
-  console.error(`[${appName}-${appVersion}] Error Initializing Cloudflare IP Service:`, err.stack)
+  console.error(`[${global.app.appName}-${global.app.appVersion}] Error Initializing Cloudflare IP Service:`, err.stack)
   process.exit(1)
 })

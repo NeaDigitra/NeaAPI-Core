@@ -42,6 +42,8 @@ function corsMiddleware(req, res, next) {
     allowOriginValue = config.credentials && origin ? origin : '*'
   } else if (origin && config.allowedOriginList.includes(origin)) {
     allowOriginValue = origin
+  } else if (!(origin) && config.allowAllOrigins) {
+    allowOriginValue = '*'
   } else {
     return res.api('forbidden')
   }
@@ -49,7 +51,7 @@ function corsMiddleware(req, res, next) {
   res.set('Access-Control-Allow-Headers', config.allowedHeaders.join(','))
   res.set('Access-Control-Allow-Methods', config.methods.join(','))
   res.set('Vary', 'Origin')
-  if (config.credentials) res.set('Access-Control-Allow-Credentials', 'true')
+  if (config.credentials && origin) res.set('Access-Control-Allow-Credentials', 'true')
   if (config.maxAge) res.set('Access-Control-Max-Age', config.maxAge.toString())
   if (config.exposedHeaders.length) res.set('Access-Control-Expose-Headers', config.exposedHeaders.join(','))
   if (req.method === 'OPTIONS') {
