@@ -1,21 +1,27 @@
 name: TODO Last-Updated
+
 on:
   push:
     paths:
       - 'docs/TODO.md'
+  workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   update-todo-date:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update last-updated date
+      - name: Update last-updated timestamp
         run: |
-          DATE=$(date +'%Y-%m-%d')
-          sed -i "s/^\\*Last updated:.*$/\*Last updated: \`${DATE}\`*/" docs/TODO.md
+          DATETIME=$(date +"%Y-%m-%d %H:%M:%S")
+          sed -i "s/^\*Last updated:.*$/\*Last updated: \`${DATETIME}\`*/" docs/TODO.md
 
       - name: Commit & push if changed
         run: |
@@ -23,7 +29,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           if ! git diff --quiet docs/TODO.md; then
             git add docs/TODO.md
-            git commit -m "chore(todo): auto-update TODO last-updated to ${DATE} 📅"
+            git commit -m "chore(todo): auto-update TODO last-updated to ${DATETIME} 📅"
             git push
           else
             echo "No changes in docs/TODO.md — skipping commit."
