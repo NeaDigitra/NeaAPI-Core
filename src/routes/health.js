@@ -1,7 +1,8 @@
 const router = require('express').Router()
 
 /**
- * Helper function to test database connectivity
+ * Helper Function To Test Database Connectivity
+ * - This function attempts to run a simple query against the database
  */
 async function checkDatabase() {
   try {
@@ -13,7 +14,8 @@ async function checkDatabase() {
 }
 
 /**
- * Helper function to test Redis connectivity
+ * Helper Function To Test Redis Connectivity
+ * - This function attempts to ping the Redis server
  */
 async function checkRedis() {
   try {
@@ -29,7 +31,6 @@ async function checkRedis() {
  * Liveness Probe
  * - Simple endpoint to check if the application is running
  * - Returns 200 if the server is alive
- * - Used by Kubernetes/Docker for basic health checks
  */
 router.get('/live', (req, res) => {
   return res.api('success', {
@@ -40,43 +41,37 @@ router.get('/live', (req, res) => {
 
 /**
  * Readiness Probe
+ * - Checks if the application is ready to handle requests
  * - Comprehensive health check including database and Redis connectivity
- * - Returns 200 if all services are healthy, 503 if any service is down
- * - Used by load balancers to determine if instance can receive traffic
  */
 router.get('/ready', async (req, res) => {
-  const [database, redis] = await Promise.all([
-    checkDatabase(),
-    checkRedis()
-  ])
-
+  const [database, redis] = await Promise.all([checkDatabase(), checkRedis()])
   const checks = {
     database: database.healthy,
     redis: redis.healthy,
     timestamp: new Date().toISOString()
   }
-
-  if (!database.healthy) checks.databaseError = database.error
-  if (!redis.healthy) checks.redisError = redis.error
-
+  if (!(database.healthy)) {
+    checks.databaseError = database.error
+  }
+  if (!(redis.healthy)) {
+    checks.redisError = redis.error
+  }
   const isHealthy = database.healthy && redis.healthy
-
   if (isHealthy) {
     return res.api('success', { status: 'ready', checks })
   } else {
-    return res.status(503).api('service_unavailable', checks)
+    return res.api('service_unavailable', checks)
   }
 })
 
 /**
- * Legacy health endpoint (for backward compatibility)
+ * Legacy Health Endpoint
+ * - For backward compatibility with older clients
+ * - Checks database and Redis connectivity
  */
 router.get('/health', async (req, res) => {
-  const [database, redis] = await Promise.all([
-    checkDatabase(),
-    checkRedis()
-  ])
-
+  const [database, redis] = await Promise.all([checkDatabase(), checkRedis()])
   if (database.healthy && redis.healthy) {
     return res.sendStatus(200)
   } else {
@@ -91,19 +86,18 @@ router.get('/health', async (req, res) => {
  */
 router.get('/startup', (req, res) => {
   const isInitialized = global.db && global.redis && global.app
-
   if (isInitialized) {
     return res.api('success', {
       status: 'initialized',
       timestamp: new Date().toISOString(),
       services: {
-        database: !!global.db,
-        redis: !!global.redis,
-        app: !!global.app
+        database: !!(global.db),
+        redis: !!(global.redis),
+        app: !!(global.app)
       }
     })
   } else {
-    return res.status(503).api('service_unavailable', {
+    return res.api('service_unavailable', {
       status: 'initializing',
       timestamp: new Date().toISOString()
     })
@@ -116,11 +110,7 @@ router.get('/startup', (req, res) => {
  * - Includes version, memory usage, and service status
  */
 router.get('/status', async (req, res) => {
-  const [database, redis] = await Promise.all([
-    checkDatabase(),
-    checkRedis()
-  ])
-
+  const [database, redis] = await Promise.all([checkDatabase(), checkRedis()])
   const status = {
     application: {
       name: global.app.appName,
@@ -142,16 +132,18 @@ router.get('/status', async (req, res) => {
       redis: redis.healthy
     }
   }
-
-  if (!database.healthy) status.services.databaseError = database.error
-  if (!redis.healthy) status.services.redisError = redis.error
-
+  if (!(database.healthy)) {
+    status.services.databaseError = database.error
+  }
+  if (!(redis.healthy)) {
+    status.services.redisError = redis.error
+  }
   return res.api('success', status)
 })
 
 /**
- * Metrics endpoint
- * - Provides basic application metrics
+ * Metrics Endpoint
+ * - Provides system metrics such as memory usage and CPU statistics
  * - Used by monitoring systems like Prometheus
  */
 router.get('/metrics', (req, res) => {
@@ -165,14 +157,12 @@ router.get('/metrics', (req, res) => {
     timestamp: Date.now(),
     version: global.app.appVersion
   }
-
-  res.setHeader('Content-Type', 'application/json')
-  return res.json(metrics)
+  return res.setHeader('Content-Type', 'application/json').json(metrics)
 })
 
 /**
- * Deep health check endpoint
- * - Performs comprehensive system checks
+ * Deep Health Check Endpoint
+ * - Performs a comprehensive health check including database and Redis connectivity
  * - Includes response time measurements
  */
 router.get('/deep', async (req, res) => {
@@ -192,8 +182,6 @@ router.get('/deep', async (req, res) => {
       responseTime: null
     }
   }
-
-  // Database check with timing
   try {
     const dbStart = process.hrtime()
     await global.db.raw('SELECT 1')
@@ -204,8 +192,6 @@ router.get('/deep', async (req, res) => {
     checks.database.status = 'unhealthy'
     checks.database.error = error.message
   }
-
-  // Redis check with timing
   try {
     const redisStart = process.hrtime()
     const redisClient = global.redis()
@@ -217,17 +203,17 @@ router.get('/deep', async (req, res) => {
     checks.redis.status = 'unhealthy'
     checks.redis.error = error.message
   }
-
   const totalDiff = process.hrtime(startTime)
   checks.totalResponseTime = `${((totalDiff[0] * 1000) + (totalDiff[1] / 1000000)).toFixed(3)}ms`
-
   const isHealthy = checks.database.status === 'healthy' && checks.redis.status === 'healthy'
-
   if (isHealthy) {
     return res.api('success', checks)
   } else {
-    return res.status(503).api('service_unavailable', checks)
+    return res.api('service_unavailable', checks)
   }
 })
 
+/**
+ * Exports
+ */
 module.exports = router

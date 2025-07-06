@@ -8,7 +8,7 @@ let redisClient = null
  * - Returns a singleton instance to avoid multiple connections
  */
 function createRedisClient() {
-  if (!redisClient) {
+  if (!(redisClient)) {
     redisClient = redis.createClient({
       url: process.env.REDIS_URL || 'redis://localhost:6379',
       username: process.env.REDIS_USERNAME,
