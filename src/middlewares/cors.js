@@ -48,6 +48,7 @@ function corsMiddleware(req, res, next) {
   res.set('Access-Control-Allow-Origin', allowOriginValue)
   res.set('Access-Control-Allow-Headers', config.allowedHeaders.join(','))
   res.set('Access-Control-Allow-Methods', config.methods.join(','))
+  res.set('Vary', 'Origin')
   if (config.credentials) res.set('Access-Control-Allow-Credentials', 'true')
   if (config.maxAge) res.set('Access-Control-Max-Age', config.maxAge.toString())
   if (config.exposedHeaders.length) res.set('Access-Control-Expose-Headers', config.exposedHeaders.join(','))
